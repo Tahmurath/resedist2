@@ -1,0 +1,39 @@
+{
+  "login": {
+    "email": "Email Address",
+    "password": "Password",
+    "emailPlaceHolder": "Enter Your Email Address",
+    "title": "Login",
+    "description": "Referenzseite über Lorem Ipsum mit Informationen zu seinen Ursprüngen sowie einem zufälligen Lipsum",
+    "forgot": "Forgot Password ?",
+    "submit": "Login",
+    "emailText": "Supporting Text",
+    "passwordText": "Supporting Text"
+  },
+  "forgot": {
+    "email": "Email Address",
+    "title": "Forgot Password",
+    "emailPlaceHolder": "Enter Your Email Address",
+    "description": "Reference site about Lorem Ipsum, giving information on its origins, as well as a random Lipsum",
+    "submit": "Confirm",
+    "emailText": "Supporting Text"
+  },
+  "createPassword": {
+    "email": "Email Address",
+    "emailPlaceHolder": "Enter Your Email Address",
+    "password": "Password",
+    "passwordPlaceholder": "Enter Your Password",
+    "title": "Create Password",
+    "description": "Please create a new password for yourself and make sure it is secure enough.",
+    "submit": "Confirm",
+    "emailText": "Supporting Text",
+    "renewPasswordText": "Supporting Text"
+  },
+  "verification": {
+    "title": "Verification Code",
+    "description": "We have sent an OTP code to the email address .",
+    "pleaseEnter": " Please enter it.",
+    "submit": "Confirm",
+    "forgot": "Is the email address incorrect?"
+  }
+}
