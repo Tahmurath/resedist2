@@ -19,22 +19,21 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import decodeJWT, {getTokenFromCookie, getUserFromToken, isExpiredJwt, saveTokenToCookie} from "@/lib/jwt";
-import { useRouter } from 'next/navigation'
+
 import {Toaster} from "@/components/ui/toaster";
 import Isguest from "@/components/Isguest.tsx";
+import {Navigate} from "react-router"
 
 const Login = () =>{
 
 
-
-    const router = useRouter();
     const token = isExpiredJwt()
 
     useEffect(() => {
         if (token) {
-            router.push('/dashboard');
+            Navigate({to:"/login"})
         }
-    }, [token, router]);
+    }, [token]);
 
 
     const [error, setError] = useState<any>(null);
@@ -52,12 +51,10 @@ const Login = () =>{
         //setLoading(true);
         setError(null); // پاک کردن خطای قبلی
 
-        const token = isExpiredJwt()
-        const user = getUserFromToken()
 
 
         try {
-            const res = await fetch("http://localhost:8080/api/v1/auth/user?" + new Date().getTime(),
+            const res = await fetch("http://localhost:4000/api/v1/auth/user?" + new Date().getTime(),
                 {
                     method: 'GET',
                     headers: {
@@ -94,7 +91,7 @@ const Login = () =>{
             //alert(JSON.stringify(data, null, 2))
 
             //const token = getTokenFromCookie()
-            fetch("http://127.0.0.1:8080/api/v1/auth/login", {
+            fetch("http://127.0.0.1:4000/api/v1/auth/login", {
                 method: "POST",
                 body: JSON.stringify({
                     email: data.username,
@@ -183,7 +180,6 @@ const Login = () =>{
 
                     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                         <InputForm password={""} username={''}></InputForm>
-                        <Button onClick={getUser}>getJWT</Button>
                     </div>
                 </div>
                 <Toaster />
