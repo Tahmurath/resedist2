@@ -14,6 +14,44 @@ import { axiosInstance } from "../axios";
 //   }
 // );
 
+const login = async (email: string, password: string) => {
+
+  const response = await axiosInstance.post("/api/v1/auth/login", {
+    email,
+    password,
+  });
+
+  // const user = response.data;
+  // localStorage.setItem("user", JSON.stringify(user));
+  // setAuthToken(user.access_token);
+  return response.data;
+
+  // try {
+  //   const response = await axiosInstance.post("/api/v1/auth/login", {
+  //     email,
+  //     password,
+  //   });
+  //
+  //   // const user = response.data;
+  //   // localStorage.setItem("user", JSON.stringify(user));
+  //   // setAuthToken(user.access_token);
+  //   return response.data;
+  // } catch (error) {
+  //   console.error("Login error:", error);
+  //   throw error;
+  // }
+};
+
+
+
+
+
+
+
+
+
+
+
 const getAuthToken = () => {
   try {
     const access_token = JSON.parse(
@@ -37,22 +75,7 @@ export const setAuthToken = (token: string) => {
   }
 };
 
-const login = async (email: string, password: string) => {
-  try {
-    const response = await axiosInstance.post("/auth/login", {
-      email,
-      password,
-    });
 
-    const user = response.data;
-    localStorage.setItem("user", JSON.stringify(user));
-    setAuthToken(user.access_token);
-    return user;
-  } catch (error) {
-    console.error("Login error:", error);
-    throw error;
-  }
-};
 
 const forgotConfirm = async (email: string) => {
   try {

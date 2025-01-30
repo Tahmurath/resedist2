@@ -1,12 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import React, { useState,useEffect } from "react";
-// import { toast } from "@/hooks/use-toast"
-// import { ToastAction } from "@/components/ui/toast"
-import { useToast } from "@/hooks/use-toast"
-import { ToastAction } from "@/components/ui/toast"
-import { toast } from "@/hooks/use-toast"
+//import { useState,useEffect } from "react";
+
 import { Button } from "@/components/ui/button"
 import {
     Form,
@@ -18,25 +14,20 @@ import {
     FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
-import decodeJWT, {getTokenFromCookie, getUserFromToken, isExpiredJwt, saveTokenToCookie} from "@/lib/jwt";
+//import decodeJWT, {getTokenFromCookie, getUserFromToken, isExpiredJwt, saveTokenToCookie} from "@/lib/jwt";
 
 import {Toaster} from "@/components/ui/toaster";
 import Isguest from "@/components/Isguest.tsx";
-import {Navigate} from "react-router"
+import { useNavigate } from "react-router";
+import {login} from "@/services/authService.ts";
+import {toast} from "@/hooks/use-toast";
 
 const Login = () =>{
 
 
-    const token = isExpiredJwt()
-
-    useEffect(() => {
-        if (token) {
-            Navigate({to:"/login"})
-        }
-    }, [token]);
+    const navigate = useNavigate();
 
 
-    const [error, setError] = useState<any>(null);
 
     const FormSchema = z.object({
         username: z.string().min(2, {
@@ -47,35 +38,7 @@ const Login = () =>{
         }),
     })
 
-    async function getUser() {
-        //setLoading(true);
-        setError(null); // پاک کردن خطای قبلی
 
-
-
-        try {
-            const res = await fetch("http://localhost:4000/api/v1/auth/user?" + new Date().getTime(),
-                {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`, // ست کردن هدر Authorization
-                    }
-                }
-            );
-            if (!res.ok) {
-                throw new Error("Network response was not ok");
-            }
-            const data = await res.json();
-
-            console.info(data)
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            setError("خطا در دریافت داده‌ها. لطفاً بعداً تلاش کنید.");
-        } finally {
-            //setLoading(false);
-        }
-    }
 
     function InputForm({username,password}:{username: string,password: string}) {
 
@@ -87,27 +50,26 @@ const Login = () =>{
             },
         })
 
-        function onSubmit(data: z.infer<typeof FormSchema>) {
-            //alert(JSON.stringify(data, null, 2))
+        const onSubmit = async (data: z.infer<typeof FormSchema>) => {
 
-            //const token = getTokenFromCookie()
-            fetch("http://127.0.0.1:4000/api/v1/auth/login", {
-                method: "POST",
-                body: JSON.stringify({
-                    email: data.username,
-                    password: data.password
-                }),
-                headers: {
-                    "Content-type": "application/json; charset=UTF-8"
-                    //'Authorization': `Bearer ${token}`,
-                }
-            })
-                .then((response) => response.json())
-                .then((json) =>
-                {
-                    saveTokenToCookie(json.token)
-                    router.push('/dashboard');
-                });
+            try {
+                //setLoading(true);
+                const user = await login(data.username, data.password);
+
+                toast({
+                    title: "You submitted the following values:",
+                    description: (
+                        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                      <code className="text-white">{JSON.stringify(user.message, null, 2)}</code>
+                    </pre>
+                    ),
+                })
+                //setLoading(false);
+                //if (user.access_token) navigate("/admin");
+            } catch (error) {
+                //setLoading(false);
+                console.error("Login Failed:", error);
+            }
         }
 
         return (
@@ -182,7 +144,7 @@ const Login = () =>{
                         <InputForm password={""} username={''}></InputForm>
                     </div>
                 </div>
-                <Toaster />
+
             </div>
         </Isguest>
 

@@ -4,6 +4,7 @@ import { Outlet } from "react-router";
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import { NavLink } from "react-router";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 
 const user = {
@@ -21,6 +22,7 @@ const navigation = [
     { name: 'Admin', href: '/admin', current: false },
     { name: 'Panel', href: '/admin/panel', current: false },
     { name: 'about', href: '/about', current: false },
+    { name: 'Login', href: '/login', current: false },
 
 ]
 const userNavigation = [
@@ -179,7 +181,7 @@ const Navlayout = () => (
 
                 <Outlet />
             </div>
-
+            <Toaster />
         </main>
     </div>
 
