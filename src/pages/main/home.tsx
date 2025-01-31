@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from "react-i18next";
+import {Button} from "@/components/ui/button.tsx";
 
 
 
@@ -15,11 +16,10 @@ function Home() {
             <div>
                 <h3>Home page</h3>
                 <div className="card">
-                    <button onClick={() => setCount((count) => count + 1)}>
+                    <Button onClick={() => setCount((count) => count + 1)}>
                         Home is {count}
-                        <br/>
-                        {t("login.description")}
-                    </button>
+                    </Button>
+                    {t("login.description")}
                 </div>
 
             </div>

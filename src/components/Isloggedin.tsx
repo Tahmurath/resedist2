@@ -1,9 +1,10 @@
 import {Navigate} from "react-router"
+import {getAuthToken} from "@/services/authService.ts";
 
 
 
 const Isloggedin = ({children}:{children:any})=> {
-    const token = localStorage.getItem('token')
+    const token = getAuthToken()
     return token ? children : <Navigate to={'/login'} />
 }
 

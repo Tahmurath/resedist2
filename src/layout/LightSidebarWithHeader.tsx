@@ -1,4 +1,4 @@
-import { NavLink } from "react-router";
+import {NavLink, useNavigate} from "react-router";
 import { Outlet } from "react-router";
 import i18n from "i18next";
 import { useTranslation } from "react-i18next";
@@ -19,16 +19,18 @@ import {
     Bars3Icon,
     BellIcon,
     CalendarIcon,
-    ChartPieIcon,
+    // ChartPieIcon,
     Cog6ToothIcon,
-    DocumentDuplicateIcon,
-    FolderIcon,
+    // DocumentDuplicateIcon,
+    // FolderIcon,
     HomeIcon,
     UsersIcon,
     XMarkIcon,
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import Isloggedin from "@/components/Isloggedin.tsx";
+import {getUser, setAuthToken} from "@/services/authService.ts";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 
 const teams = [
@@ -65,6 +67,14 @@ function LightSidebarWithHeader() {
         // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
     ]
 
+    const navigate = useNavigate();
+
+    const logout = async () => {
+        localStorage.removeItem("user");
+        setAuthToken("");
+        navigate("/");
+    }
+
     return (
         <>
             {/*
@@ -75,8 +85,7 @@ function LightSidebarWithHeader() {
         <body class="h-full">
         ```
       */}
-            <html className="h-full bg-white">
-            <body className="h-full">
+
             <Isloggedin>
             <div>
                 <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
@@ -323,7 +332,7 @@ function LightSidebarWithHeader() {
                                         />
                                         <span className="hidden lg:flex lg:items-center">
                       <span aria-hidden="true" className="ml-4 text-sm font-semibold leading-6 text-gray-900">
-                        Tom Cook
+                       {getUser().info.Email}
                       </span>
                       <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400"/>
                     </span>
@@ -342,6 +351,11 @@ function LightSidebarWithHeader() {
                                                 </NavLink>
                                             </MenuItem>
                                         ))}
+                                        <MenuItem>
+                                            <a onClick={logout} className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none">
+                                                Logout
+                                            </a>
+                                        </MenuItem>
                                     </MenuItems>
                                 </Menu>
                             </div>
@@ -359,8 +373,7 @@ function LightSidebarWithHeader() {
                 </div>
             </div>
             </Isloggedin>
-            </body>
-            </html>
+            <Toaster />
             </>
 
             )

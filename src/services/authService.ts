@@ -13,36 +13,29 @@ import { axiosInstance } from "../axios";
 //     return Promise.reject(error);
 //   }
 // );
-
 const login = async (email: string, password: string) => {
+  try {
+    const response = await axiosInstance.post("/api/v1/auth/login", {
+      email,
+      password,
+    });
 
-  const response = await axiosInstance.post("/api/v1/auth/login", {
-    email,
-    password,
-  });
+    const user = response.data.user;
+    localStorage.setItem("user", JSON.stringify(user));
+    setAuthToken(user.token);
+    return response.data;
 
-  // const user = response.data;
-  // localStorage.setItem("user", JSON.stringify(user));
-  // setAuthToken(user.access_token);
-  return response.data;
-
-  // try {
-  //   const response = await axiosInstance.post("/api/v1/auth/login", {
-  //     email,
-  //     password,
-  //   });
-  //
-  //   // const user = response.data;
-  //   // localStorage.setItem("user", JSON.stringify(user));
-  //   // setAuthToken(user.access_token);
-  //   return response.data;
-  // } catch (error) {
-  //   console.error("Login error:", error);
-  //   throw error;
-  // }
+  } catch (error: any) {
+    if (error.response) {
+      console.error("Server error:", error.response.data?.message || error.response.statusText);
+    } else if (error.request) {
+      console.error("Network error: No response received from server");
+    } else {
+      console.error("Unexpected error:", error.message);
+    }
+    throw error;
+  }
 };
-
-
 
 
 
@@ -54,11 +47,25 @@ const login = async (email: string, password: string) => {
 
 const getAuthToken = () => {
   try {
-    const access_token = JSON.parse(
+    const token = JSON.parse(
       localStorage.getItem("user") as string
-    )?.access_token;
-    if (access_token) {
-      return access_token;
+    )?.token;
+    if (token) {
+      return token;
+    }
+    return undefined;
+  } catch (err) {
+    console.log("error: ", err);
+    return undefined;
+  }
+};
+const getUser = () => {
+  try {
+    const user = JSON.parse(
+      localStorage.getItem("user") as string
+    );
+    if (user) {
+      return user;
     }
     return undefined;
   } catch (err) {
@@ -120,4 +127,4 @@ const changePassword = async (
   }
 };
 
-export { login, forgotConfirm, checkForgotCode, changePassword, getAuthToken };
+export { login, forgotConfirm, checkForgotCode, changePassword, getAuthToken, getUser };

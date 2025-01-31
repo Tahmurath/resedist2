@@ -53,23 +53,39 @@ const Login = () =>{
         const onSubmit = async (data: z.infer<typeof FormSchema>) => {
 
             try {
-                //setLoading(true);
-                const user = await login(data.username, data.password);
+                const logininfo = await login(data.username, data.password);
 
                 toast({
-                    title: "You submitted the following values:",
+                    title: "Login Successful",
                     description: (
-                        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                      <code className="text-white">{JSON.stringify(user.message, null, 2)}</code>
-                    </pre>
+                            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                                <code className="text-white">{JSON.stringify(logininfo.message, null, 2)}</code>
+                            </pre>
                     ),
-                })
-                //setLoading(false);
-                //if (user.access_token) navigate("/admin");
-            } catch (error) {
-                //setLoading(false);
-                console.error("Login Failed:", error);
+                });
+
+                if (logininfo.user.token) navigate("/admin");
+
+            } catch (error: any) {
+                let errorMessage = "An unexpected error occurred. Please try again.";
+
+                if (error.response) {
+                    errorMessage = error.response.data?.message || "Login failed. Please check your credentials.";
+                    console.error("Server Error:", error.response.status, error.response.data);
+                } else if (error.request) {
+                    errorMessage = "Unable to connect to the server. Please check your internet connection.";
+                    console.error("Network Error: No response received.");
+                } else {
+                    console.error("Unexpected Error:", error.message);
+                }
+                toast({
+                    title: "Login Failed",
+                    description: errorMessage,
+                    variant: "destructive", // فرض می‌کنیم این نوع استایل برای خطا وجود دارد
+                });
             }
+
+
         }
 
         return (
