@@ -10,11 +10,16 @@ import HttpBackend from 'i18next-http-backend';
 
 
 
+var savedLanguage = localStorage.getItem("language");
+if (!savedLanguage) {
+    savedLanguage = 'en'
+}
+
 i18n
     .use(HttpBackend) // استفاده از HTTP Backend برای بارگذاری فایل‌ها
     .use(initReactI18next) // الحاق به React
     .init({
-        fallbackLng: 'en',
+        fallbackLng: savedLanguage,
         debug: false,
         interpolation: {
             escapeValue: false, // برای React نیازی به escaping نیست

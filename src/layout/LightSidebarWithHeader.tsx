@@ -1,8 +1,9 @@
-import {NavLink, useNavigate} from "react-router";
+import {Navigate, NavLink, useNavigate} from "react-router";
 import { Outlet } from "react-router";
 import i18n from "i18next";
 import { useTranslation } from "react-i18next";
 import {} from '@heroicons/react/24/outline'
+import React, { useEffect } from "react";
 
 import { useState } from 'react'
 import {
@@ -29,30 +30,20 @@ import {
 } from '@heroicons/react/24/outline'
 import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import Isloggedin from "@/components/Isloggedin.tsx";
-import {getUser, setAuthToken} from "@/services/authService.ts";
+import {getAuthToken, getUser, setAuthToken} from "@/services/authService.ts";
 import {Toaster} from "@/components/ui/toaster.tsx";
-
-
-const teams = [
-    { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
-    { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
-    { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false },
-]
-const userNavigation = [
-    { name: 'Your profile', href: '#' },
-    { name: 'Sign out', href: '#' },
-]
-
-function classNames(...classes:string[]) {
-    return classes.filter(Boolean).join(' ')
-}
 
 
 function LightSidebarWithHeader() {
 
-    const changeLanguage = (lng:string) => {
-        i18n.changeLanguage(lng);
-    };
+
+    const navigate = useNavigate();
+
+    const token = getAuthToken()
+    if (!token) {
+        return <Navigate to="/login" />;
+    }
+
 
     const [sidebarOpen, setSidebarOpen] = useState(false)
 
@@ -67,13 +58,57 @@ function LightSidebarWithHeader() {
         // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
     ]
 
-    const navigate = useNavigate();
+
 
     const logout = async () => {
         localStorage.removeItem("user");
         setAuthToken("");
         navigate("/");
     }
+
+
+    const teams = [
+        { id: 1, name: 'Heroicons', href: '#', initial: 'H', current: false },
+        { id: 2, name: 'Tailwind Labs', href: '#', initial: 'T', current: false },
+        { id: 3, name: 'Workcation', href: '#', initial: 'W', current: false },
+    ]
+
+    const userNavigation = [
+        { name: "Your profile", href: "/admin" },
+        { name: "Sign out", onClick: () => logout() },
+    ];
+
+
+    function classNames(...classes:string[]) {
+        return classes.filter(Boolean).join(' ')
+    }
+
+    const [currentLanguage, setCurrentLanguage] = useState<string>("en");
+    useEffect(() => {
+        const savedLanguage = localStorage.getItem("language") || "en";
+        setCurrentLanguage(savedLanguage);
+        i18n.changeLanguage(savedLanguage);
+    }, [i18n]);
+    const changeLanguage = (lng: string) => {
+        i18n.changeLanguage(lng);
+        setCurrentLanguage(lng);
+        localStorage.setItem("language", lng);
+    };
+
+
+    // const changeLanguage = (lng: string) => {
+    //     i18n.changeLanguage(lng);
+    //     localStorage.setItem("language", lng); // ذخیره زبان جدید
+    // };
+
+    // useEffect(() => {
+    //     // بررسی زبان ذخیره شده در localStorage
+    //     const savedLanguage = localStorage.getItem("language");
+    //     if (savedLanguage) {
+    //         i18n.changeLanguage(savedLanguage); // تنظیم زبان ذخیره شده
+    //     }
+    // }, [i18n]);
+
 
     return (
         <>
@@ -318,6 +353,39 @@ function LightSidebarWithHeader() {
                                     <BellIcon aria-hidden="true" className="h-6 w-6"/>
                                 </button>
 
+
+
+
+                                <Menu as="div" className="relative">
+                                    <MenuButton className="flex items-center text-sm font-semibold text-gray-900">
+                                        {currentLanguage === "en" ? "English" : "فارسی"}
+                                        <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400" />
+                                    </MenuButton>
+                                    <MenuItems className="absolute right-0 z-10 mt-2.5 w-28 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
+                                        <MenuItem>
+                                            <button
+                                                onClick={() => changeLanguage("en")}
+                                                className={`block w-full px-3 py-1 text-sm leading-6 text-left ${
+                                                    currentLanguage === "en" ? "font-bold" : ""
+                                                } hover:bg-gray-50`}
+                                            >
+                                                English
+                                            </button>
+                                        </MenuItem>
+                                        <MenuItem>
+                                            <button
+                                                onClick={() => changeLanguage("fa")}
+                                                className={`block w-full px-3 py-1 text-sm leading-6 text-left ${
+                                                    currentLanguage === "fa" ? "font-bold" : ""
+                                                } hover:bg-gray-50`}
+                                            >
+                                                فارسی
+                                            </button>
+                                        </MenuItem>
+                                    </MenuItems>
+                                </Menu>
+
+
                                 {/* Separator */}
                                 <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200"/>
 
@@ -331,11 +399,11 @@ function LightSidebarWithHeader() {
                                             className="h-8 w-8 rounded-full bg-gray-50"
                                         />
                                         <span className="hidden lg:flex lg:items-center">
-                      <span aria-hidden="true" className="ml-4 text-sm font-semibold leading-6 text-gray-900">
-                       {getUser()?.info?.Email}
-                      </span>
-                      <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400"/>
-                    </span>
+                                            <span aria-hidden="true" className="ml-4 text-sm font-semibold leading-6 text-gray-900">
+                                                {getUser()?.info?.Email}
+                                            </span>
+                                          <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400"/>
+                                        </span>
                                     </MenuButton>
                                     <MenuItems
                                         transition
@@ -343,21 +411,28 @@ function LightSidebarWithHeader() {
                                     >
                                         {userNavigation.map((item) => (
                                             <MenuItem key={item.name}>
-                                                <NavLink
-                                                    to={item.href}
-                                                    className="block px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
-                                                >
-                                                    {item.name}
-                                                </NavLink>
+                                                {item.onClick ? (
+                                                    <button
+                                                        onClick={item.onClick}
+                                                        className="block w-full px-3 py-1 text-sm leading-6 text-gray-900 text-left hover:bg-gray-50"
+                                                    >
+                                                        {item.name}
+                                                    </button>
+                                                ) : (
+                                                    <NavLink
+                                                        to={item.href}
+                                                        className="block px-3 py-1 text-sm leading-6 text-gray-900 data-[focus]:bg-gray-50"
+                                                    >
+                                                        {item.name}
+                                                    </NavLink>
+                                                )}
                                             </MenuItem>
                                         ))}
-                                        <MenuItem>
-                                            <a onClick={logout} className="block px-4 py-2 text-sm text-gray-700 data-[focus]:bg-gray-100 data-[focus]:outline-none">
-                                                Logout
-                                            </a>
-                                        </MenuItem>
                                     </MenuItems>
                                 </Menu>
+
+
+
                             </div>
                         </div>
                     </div>
