@@ -1,9 +1,8 @@
 import {Navigate, NavLink, useNavigate} from "react-router";
 import { Outlet } from "react-router";
-import i18n from "i18next";
 import { useTranslation } from "react-i18next";
 import {} from '@heroicons/react/24/outline'
-import React, { useEffect } from "react";
+
 
 import { useState } from 'react'
 import {
@@ -32,6 +31,7 @@ import { ChevronDownIcon, MagnifyingGlassIcon } from '@heroicons/react/20/solid'
 import Isloggedin from "@/components/Isloggedin.tsx";
 import {getAuthToken, getUser, setAuthToken} from "@/services/authService.ts";
 import {Toaster} from "@/components/ui/toaster.tsx";
+import UserMenu from "@/components/UserMenu.tsx";
 
 
 function LightSidebarWithHeader() {
@@ -47,12 +47,16 @@ function LightSidebarWithHeader() {
 
     const [sidebarOpen, setSidebarOpen] = useState(false)
 
+    const handleNavLinkClick = () => {
+        setSidebarOpen(false);
+    };
+
     const { t } = useTranslation();
     const navigation = [
-        { name: t("login.title"), href: '/', icon: HomeIcon, current: true },
-        { name: 'admin', href: '/admin', icon: CalendarIcon, current: false },
-        { name: 'Panel', href: '/admin/panel', icon: UsersIcon, current: false },
-        { name: 'Department', href: '/admin/department', icon: UsersIcon, current: false },
+        { name: t("site.home"), href: '/', icon: HomeIcon, current: true },
+        { name: t("site.admin"), href: '/admin', icon: CalendarIcon, current: false },
+        { name: t("site.panel"), href: '/admin/panel', icon: UsersIcon, current: false },
+        { name: t("site.department"), href: '/admin/department', icon: UsersIcon, current: false },
         // { name: 'About', href: '/about', icon: FolderIcon, current: false },
         // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
         // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
@@ -82,32 +86,6 @@ function LightSidebarWithHeader() {
     function classNames(...classes:string[]) {
         return classes.filter(Boolean).join(' ')
     }
-
-    const [currentLanguage, setCurrentLanguage] = useState<string>("en");
-    useEffect(() => {
-        const savedLanguage = localStorage.getItem("language") || "en";
-        setCurrentLanguage(savedLanguage);
-        i18n.changeLanguage(savedLanguage);
-    }, [i18n]);
-    const changeLanguage = (lng: string) => {
-        i18n.changeLanguage(lng);
-        setCurrentLanguage(lng);
-        localStorage.setItem("language", lng);
-    };
-
-
-    // const changeLanguage = (lng: string) => {
-    //     i18n.changeLanguage(lng);
-    //     localStorage.setItem("language", lng); // ذخیره زبان جدید
-    // };
-
-    // useEffect(() => {
-    //     // بررسی زبان ذخیره شده در localStorage
-    //     const savedLanguage = localStorage.getItem("language");
-    //     if (savedLanguage) {
-    //         i18n.changeLanguage(savedLanguage); // تنظیم زبان ذخیره شده
-    //     }
-    // }, [i18n]);
 
 
     return (
@@ -161,6 +139,7 @@ function LightSidebarWithHeader() {
                                                     <li key={item.name}>
                                                         <NavLink
                                                             to={item.href}
+                                                            onClick={handleNavLinkClick}
                                                             className={classNames(
                                                                 item.current
                                                                     ? 'bg-gray-50 text-indigo-600'
@@ -355,35 +334,8 @@ function LightSidebarWithHeader() {
 
 
 
+                                <UserMenu></UserMenu>
 
-                                <Menu as="div" className="relative">
-                                    <MenuButton className="flex items-center text-sm font-semibold text-gray-900">
-                                        {currentLanguage === "en" ? "English" : "فارسی"}
-                                        <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400" />
-                                    </MenuButton>
-                                    <MenuItems className="absolute right-0 z-10 mt-2.5 w-28 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none">
-                                        <MenuItem>
-                                            <button
-                                                onClick={() => changeLanguage("en")}
-                                                className={`block w-full px-3 py-1 text-sm leading-6 text-left ${
-                                                    currentLanguage === "en" ? "font-bold" : ""
-                                                } hover:bg-gray-50`}
-                                            >
-                                                English
-                                            </button>
-                                        </MenuItem>
-                                        <MenuItem>
-                                            <button
-                                                onClick={() => changeLanguage("fa")}
-                                                className={`block w-full px-3 py-1 text-sm leading-6 text-left ${
-                                                    currentLanguage === "fa" ? "font-bold" : ""
-                                                } hover:bg-gray-50`}
-                                            >
-                                                فارسی
-                                            </button>
-                                        </MenuItem>
-                                    </MenuItems>
-                                </Menu>
 
 
                                 {/* Separator */}
@@ -439,9 +391,6 @@ function LightSidebarWithHeader() {
 
                     <main className="py-10">
                         <div className="px-4 sm:px-6 lg:px-8">
-                            <button onClick={() => changeLanguage('en')}>English</button>
-                            <button onClick={() => changeLanguage('fa')}>فارسی</button>
-                            <button onClick={() => changeLanguage('de')}>Deutsch</button>
                             <Outlet/>
                         </div>
                     </main>

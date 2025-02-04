@@ -162,7 +162,7 @@ const Navlayout = () =>{
                         {navigation.map((item) => (
                             <NavLink
                                 key={item.name}
-                                as="a"
+                                // as="a"
                                 to={item.href}
                                 aria-current={item.current ? 'page' : undefined}
                                 className={classNames(

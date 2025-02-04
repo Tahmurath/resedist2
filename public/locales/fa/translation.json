@@ -1,4 +1,10 @@
 {
+  "site": {
+    "home": "خانه",
+    "admin": "مدیریت",
+    "panel": "پنل",
+    "department": "ارگان ها"
+  },
   "login": {
     "email": "Email Address",
     "password": "Password",

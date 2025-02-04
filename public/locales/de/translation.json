@@ -1,4 +1,10 @@
 {
+  "site": {
+    "home": "Startseite",
+    "admin": "Administratorin",
+    "panel": "Bedienfeld",
+    "department": "Abteilung"
+  },
   "login": {
     "email": "Email Address",
     "password": "Password",

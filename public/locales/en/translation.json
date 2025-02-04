@@ -1,4 +1,10 @@
 {
+  "site": {
+    "home": "Home",
+    "admin": "Admin",
+    "panel": "Panel",
+    "department": "Departments"
+  },
   "login": {
     "email": "Email Address",
     "password": "Password",
