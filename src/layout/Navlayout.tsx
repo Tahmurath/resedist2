@@ -1,4 +1,4 @@
-import {Outlet, useNavigate} from "react-router";
+import {Outlet, useNavigate, useLocation} from "react-router";
 // import './Admin.css'
 
 import { Disclosure, DisclosureButton, DisclosurePanel, Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
@@ -15,7 +15,7 @@ import {ChevronDownIcon} from "@heroicons/react/20/solid";
 
 const Navlayout = () =>{
 
-
+    const location = useLocation();
     const navigate = useNavigate();
 
     const logout = async () => {
@@ -75,9 +75,9 @@ const Navlayout = () =>{
                                         <NavLink
                                             key={item.name}
                                             to={item.href}
-                                            aria-current={item.current ? 'page' : undefined}
+                                            aria-current={location.pathname === item.href ? 'page' : undefined}
                                             className={classNames(
-                                                item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                                location.pathname === item.href ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                                 'rounded-md px-3 py-2 text-sm font-medium',
                                             )}
                                         >
@@ -164,9 +164,9 @@ const Navlayout = () =>{
                                 key={item.name}
                                 // as="a"
                                 to={item.href}
-                                aria-current={item.current ? 'page' : undefined}
+                                aria-current={location.pathname === item.href ? 'page' : undefined}
                                 className={classNames(
-                                    item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
+                                    location.pathname === item.href ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                                     'block rounded-md px-3 py-2 text-base font-medium',
                                 )}
                             >

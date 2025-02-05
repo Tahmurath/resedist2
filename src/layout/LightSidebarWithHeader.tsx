@@ -1,4 +1,4 @@
-import {Navigate, NavLink, useNavigate} from "react-router";
+import {Navigate, NavLink, useNavigate, useLocation} from "react-router";
 import { Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import {} from '@heroicons/react/24/outline'
@@ -36,6 +36,7 @@ import UserMenu from "@/components/UserMenu.tsx";
 
 function LightSidebarWithHeader() {
 
+    const location = useLocation();
 
     const navigate = useNavigate();
 
@@ -57,6 +58,7 @@ function LightSidebarWithHeader() {
         { name: t("site.admin"), href: '/admin', icon: CalendarIcon, current: false },
         { name: t("site.panel"), href: '/admin/panel', icon: UsersIcon, current: false },
         { name: t("site.department"), href: '/admin/department', icon: UsersIcon, current: false },
+        { name: "fghfghf", href: '/admin/demo', icon: UsersIcon, current: false },
         // { name: 'About', href: '/about', icon: FolderIcon, current: false },
         // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
         // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
@@ -141,7 +143,7 @@ function LightSidebarWithHeader() {
                                                             to={item.href}
                                                             onClick={handleNavLinkClick}
                                                             className={classNames(
-                                                                item.current
+                                                                location.pathname === item.href
                                                                     ? 'bg-gray-50 text-indigo-600'
                                                                     : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
                                                                 'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
@@ -150,7 +152,7 @@ function LightSidebarWithHeader() {
                                                             <item.icon
                                                                 aria-hidden="true"
                                                                 className={classNames(
-                                                                    item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                                                                    location.pathname === item.href ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
                                                                     'h-6 w-6 shrink-0',
                                                                 )}
                                                             />
@@ -231,7 +233,7 @@ function LightSidebarWithHeader() {
                                                 <NavLink
                                                     to={item.href}
                                                     className={classNames(
-                                                        item.current
+                                                        location.pathname === item.href
                                                             ? 'bg-gray-50 text-indigo-600'
                                                             : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
                                                         'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
@@ -240,7 +242,7 @@ function LightSidebarWithHeader() {
                                                     <item.icon
                                                         aria-hidden="true"
                                                         className={classNames(
-                                                            item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                                                            location.pathname === item.href ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
                                                             'h-6 w-6 shrink-0',
                                                         )}
                                                     />
