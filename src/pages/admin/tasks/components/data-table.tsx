@@ -27,15 +27,17 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
+import {columns} from "@/pages/admin/tasks/components/columns.tsx";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
+
 export function DataTable<TData, TValue>({
-                                           columns,
                                            data,
+                                           columns,
                                            totalPages,
                                            currentPage,
                                            rowsPerPage,

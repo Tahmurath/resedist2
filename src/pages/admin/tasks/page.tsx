@@ -44,7 +44,7 @@ export default function TaskPage() {
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [totalPages, setTotalPages] = useState(1);
 
-    const fetchTasks = async (page: number) => {
+    const fetchTasks = async (page: number,rowsPerPage: number) => {
         try {
             const response = await fetch(`http://localhost:4000/api/v1/department2?page=${page}&page_size=${rowsPerPage}`);
             const data = await response.json();
@@ -58,8 +58,8 @@ export default function TaskPage() {
     };
 
     useEffect(() => {
-        fetchTasks(currentPage);
-    }, [currentPage]);
+        fetchTasks(currentPage, rowsPerPage);
+    }, [currentPage,rowsPerPage]);
 
 
     return (

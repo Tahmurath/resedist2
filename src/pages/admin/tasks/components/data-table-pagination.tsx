@@ -21,8 +21,9 @@ interface DataTablePaginationProps<TData> {
   rowsPerPage: number
   totalPages: number
   onPageChange: (page: number) => void
-  onRowsPerPageChange: (rows: number) => void
+  onRowsPerPage: (page: number) => void
 }
+
 
 export function DataTablePagination<TData>({
   table,
@@ -31,7 +32,6 @@ export function DataTablePagination<TData>({
                                              totalPages,
                                              onPageChange,
                                              onRowsPerPage,
-                                             onRowsPerPageChange,
 }: DataTablePaginationProps<TData>) {
 
 
@@ -47,7 +47,7 @@ export function DataTablePagination<TData>({
   return (
       <div className="flex items-center justify-between px-2">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">Rows per page{rowsPerPage}</p>
           <Select
               value={`${rowsPerPage}`}
               onValueChange={(value) => onRowsPerPage(Number(value))}
