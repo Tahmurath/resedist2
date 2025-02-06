@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableViewOptions } from "./data-table-view-options"
 
-import { priorities, statuses } from "../data/data"
+import { parents, departmentTypes } from "../data/data"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 
 interface DataTableToolbarProps<TData> {
@@ -30,18 +30,18 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("status") && (
+        {table.getColumn("departmentType") && (
           <DataTableFacetedFilter
-            column={table.getColumn("status")}
-            title="Status"
-            options={statuses}
+            column={table.getColumn("departmentType")}
+            title="departmentType"
+            options={departmentTypes}
           />
         )}
-        {table.getColumn("priority") && (
+        {table.getColumn("parent") && (
           <DataTableFacetedFilter
-            column={table.getColumn("priority")}
-            title="Priority"
-            options={priorities}
+            column={table.getColumn("parent")}
+            title="parent"
+            options={parents}
           />
         )}
         {isFiltered && (

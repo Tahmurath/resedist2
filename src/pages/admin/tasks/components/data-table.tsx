@@ -34,9 +34,20 @@ interface DataTableProps<TData, TValue> {
 }
 
 export function DataTable<TData, TValue>({
-  columns,
-  data,
-}: DataTableProps<TData, TValue>) {
+                                           columns,
+                                           data,
+                                           totalPages,
+                                           currentPage,
+                                           rowsPerPage,
+                                           onRowsPerPage,
+                                           onPageChange,
+                                         }: DataTableProps<TData, TValue> & {
+  totalPages: number;
+  currentPage: number;
+  rowsPerPage: number;
+  onRowsPerPage: (page: number) => void;
+  onPageChange: (page: number) => void;
+}) {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -120,7 +131,13 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <DataTablePagination table={table}
+                           currentPage={currentPage}
+                           rowsPerPage={rowsPerPage}
+                           totalPages={totalPages}
+                           onPageChange={onPageChange}
+                           onRowsPerPage={onRowsPerPage}
+      />
     </div>
   )
 }

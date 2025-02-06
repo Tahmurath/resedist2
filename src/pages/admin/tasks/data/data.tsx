@@ -24,48 +24,48 @@ export const labels = [
   },
 ]
 
-export const statuses = [
+export const departmentTypes = [
   {
-    value: "backlog",
+    value: 1,
     label: "Backlog",
     icon: HelpCircle,
   },
   {
-    value: "todo",
+    value: 2,
     label: "Todo",
     icon: Circle,
   },
   {
-    value: "in progress",
+    value: 3,
     label: "In Progress",
     icon: Timer,
   },
   {
-    value: "done",
+    value: 4,
     label: "Done",
     icon: CheckCircle,
   },
   {
-    value: "canceled",
+    value: 5,
     label: "Canceled",
     icon: CircleOff,
   },
 ]
 
-export const priorities = [
+export const parents = [
   {
     label: "Low",
-    value: "low",
+    value: 1,
     icon: ArrowDown,
   },
   {
     label: "Medium",
-    value: "medium",
+    value: 92,
     icon: ArrowRight,
   },
   {
     label: "High",
-    value: "high",
+    value: 103,
     icon: ArrowUp,
   },
 ]

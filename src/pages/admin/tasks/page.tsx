@@ -1,6 +1,3 @@
-// import { promises as fs } from "fs"
-// import path from "path"
-
 import { z } from "zod"
 
 import { columns } from "./components/columns"
@@ -10,16 +7,20 @@ import { taskSchema } from "./data/schema"
 import { useEffect, useState } from 'react';
 
 
-function TaskList() {
+function TaskList2() {
     const [tasks, setTasks] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     //const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function fetchTasks() {
             try {
-                const response = await fetch('/tasks.json');
+                const response = await fetch('http://localhost:4000/api/v1/department2?page_size=10');
                 const data = await response.json();
-                setTasks(data);
+                console.log(data.data);
+                setTasks(data.data);
+                setTotalPages(data._pagination.total_pages);
             } catch (error) {
                 console.error('Failed to fetch tasks:', error);
             } finally {
@@ -36,7 +37,30 @@ function TaskList() {
 
 
 export default function TaskPage() {
-    const tasks = TaskList()
+    //const tasks = TaskList()
+
+    const [tasks, setTasks] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(5)
+    const [totalPages, setTotalPages] = useState(1);
+
+    const fetchTasks = async (page: number) => {
+        try {
+            const response = await fetch(`http://localhost:4000/api/v1/department2?page=${page}&page_size=${rowsPerPage}`);
+            const data = await response.json();
+            setTasks(data.data);
+            //console.log(data._pagination.total_pages);
+            setTotalPages(data._pagination.total_pages); // فرض کنید API تعداد کل صفحات را برمی‌گرداند
+
+        } catch (error) {
+            console.error('Failed to fetch tasks:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchTasks(currentPage);
+    }, [currentPage]);
+
 
     return (
         <>
@@ -52,7 +76,15 @@ export default function TaskPage() {
                         <UserNav />
                     </div>
                 </div>
-                <DataTable data={tasks} columns={columns} />
+                <DataTable
+                    data={tasks}
+                    columns={columns}
+                    totalPages={totalPages}
+                    currentPage={currentPage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPage={(page: number) => setRowsPerPage(page)}
+                    onPageChange={(page: number) => setCurrentPage(page)}
+                />
             </div>
         </>
     )
