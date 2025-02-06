@@ -16,7 +16,7 @@ function TaskList2() {
     useEffect(() => {
         async function fetchTasks() {
             try {
-                const response = await fetch('http://localhost:4000/api/v1/department2?page_size=10');
+                const response = await fetch('http://192.168.1.164:4000/api/v1/department2?page_size=10');
                 const data = await response.json();
                 console.log(data.data);
                 setTasks(data.data);
@@ -44,13 +44,13 @@ export default function TaskPage() {
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [totalPages, setTotalPages] = useState(1);
 
-    const fetchTasks = async (page: number,rowsPerPage: number) => {
+    const fetchTasks = async (page: number,perPage: number) => {
         try {
-            const response = await fetch(`http://localhost:4000/api/v1/department2?page=${page}&page_size=${rowsPerPage}`);
-            const data = await response.json();
-            setTasks(data.data);
+            const response = await fetch(`http://192.168.1.164:4000/api/v1/department2?page=${page}&page_size=${perPage}`);
+            const tasks = await response.json();
+            setTasks(tasks.data);
             //console.log(data._pagination.total_pages);
-            setTotalPages(data._pagination.total_pages); // فرض کنید API تعداد کل صفحات را برمی‌گرداند
+            setTotalPages(tasks._pagination.total_pages); // فرض کنید API تعداد کل صفحات را برمی‌گرداند
 
         } catch (error) {
             console.error('Failed to fetch tasks:', error);
@@ -64,7 +64,7 @@ export default function TaskPage() {
 
     return (
         <>
-            <div className="hidden h-full flex-1 flex-col space-y-8 p-8 md:flex">
+            <div className=" h-full flex-1 flex-col space-y-8 p-8 md:flex">
                 <div className="flex items-center justify-between space-y-2">
                     <div>
                         <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
