@@ -13,6 +13,7 @@ const TaskList = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [totalPages, setTotalPages] = useState(1);
+    const [totalRows, setTotalRows] = useState(0);
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
     const [title, setTitle] = useState<string | null>(null);
@@ -20,7 +21,7 @@ const TaskList = () => {
 
     const fetchTasks = useCallback(async () => {
 
-        console.log(title);
+        //console.log(title);
         try {
             const queryParams = new URLSearchParams({
                 page: currentPage.toString(),
@@ -35,6 +36,7 @@ const TaskList = () => {
             const data = await response.json();
             setTasks(data.data);
             setTotalPages(data._pagination.total_pages);
+            setTotalRows(data._pagination.total_rows);
         } catch (error) {
             console.error("Failed to fetch tasks:", error);
         }
@@ -55,14 +57,14 @@ const TaskList = () => {
         //onTitleChange(value); // این تابع را از والد به عنوان props بفرست
     };
 
-    return { tasks, currentPage, rowsPerPage, totalPages, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange };
+    return { tasks, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange };
 }
 
 
 export default function TaskPage() {
 
 
-    const { tasks, currentPage, rowsPerPage, totalPages, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange } = TaskList();
+    const { tasks, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange } = TaskList();
 
 
     return (
@@ -83,6 +85,7 @@ export default function TaskPage() {
                     data={tasks}
                     columns={columns}
                     totalPages={totalPages}
+                    totalRows={totalRows}
                     currentPage={currentPage}
                     rowsPerPage={rowsPerPage}
                     onRowsPerPage={(page: number) => setRowsPerPage(page)}

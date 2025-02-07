@@ -39,6 +39,7 @@ export function DataTable<TData, TValue>({
   data,
   columns,
   totalPages,
+  totalRows,
   currentPage,
   rowsPerPage,
   onRowsPerPage,
@@ -47,6 +48,7 @@ export function DataTable<TData, TValue>({
   onTitleChange,
 }: DataTableProps<TData, TValue> & {
   totalPages: number;
+  totalRows: number;
   currentPage: number;
   rowsPerPage: number;
   onRowsPerPage: (page: number) => void;
@@ -154,6 +156,7 @@ export function DataTable<TData, TValue>({
           currentPage={currentPage}
          rowsPerPage={rowsPerPage}
          totalPages={totalPages}
+         totalRows={totalRows}
          onPageChange={onPageChange}
          onRowsPerPage={onRowsPerPage}
       />
