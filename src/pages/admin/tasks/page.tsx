@@ -5,6 +5,7 @@ import { DataTable } from "./components/data-table"
 import { UserNav } from "./components/user-nav"
 //import { taskSchema } from "./data/schema"
 import { useEffect, useState, useCallback  } from 'react';
+// import * as React from "react";
 
 
 const TaskList = () => {
@@ -14,14 +15,20 @@ const TaskList = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+    const [title, setTitle] = useState<string | null>(null);
+
 
     const fetchTasks = useCallback(async () => {
+
+        console.log(title);
         try {
             const queryParams = new URLSearchParams({
                 page: currentPage.toString(),
                 page_size: rowsPerPage.toString(),
                 ...(sortColumn && { sort: sortColumn }), // ستون مرتب‌سازی
                 ...(sortOrder && { order: sortOrder }), // ترتیب مرتب‌سازی
+                ...(title && title.length >= 2 && { title: title }),
+                //...(title && { title: title }),
             });
 
             const response = await fetch(`http://localhost:4000/api/v1/department2?${queryParams}`);
@@ -31,7 +38,7 @@ const TaskList = () => {
         } catch (error) {
             console.error("Failed to fetch tasks:", error);
         }
-    }, [currentPage, rowsPerPage, sortColumn, sortOrder]);
+    }, [currentPage, rowsPerPage, sortColumn, sortOrder, title]);
 
     useEffect(() => {
         fetchTasks();
@@ -42,14 +49,20 @@ const TaskList = () => {
         setSortOrder(order);
     };
 
-    return { tasks, currentPage, rowsPerPage, totalPages, setCurrentPage, setRowsPerPage, handleSortingChange };
+    const handleTitleChange = (title: string) => {
+        console.log(title)
+        setTitle(title);
+        //onTitleChange(value); // این تابع را از والد به عنوان props بفرست
+    };
+
+    return { tasks, currentPage, rowsPerPage, totalPages, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange };
 }
 
 
 export default function TaskPage() {
 
 
-    const { tasks, currentPage, rowsPerPage, totalPages, setCurrentPage, setRowsPerPage, handleSortingChange } = TaskList();
+    const { tasks, currentPage, rowsPerPage, totalPages, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange } = TaskList();
 
 
     return (
@@ -75,6 +88,7 @@ export default function TaskPage() {
                     onRowsPerPage={(page: number) => setRowsPerPage(page)}
                     onPageChange={(page: number) => setCurrentPage(page)}
                     onSortingChange={(column: string, order: "asc" | "desc") => handleSortingChange(column,order)}
+                    onTitleChange={(title: string) => handleTitleChange(title)}
                 />
             </div>
         </>

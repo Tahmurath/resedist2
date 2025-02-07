@@ -25,6 +25,7 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
+// import {useState} from "react";
 
 
 interface DataTableProps<TData, TValue> {
@@ -33,6 +34,7 @@ interface DataTableProps<TData, TValue> {
 }
 
 // onSortingChange={(column: string, order: string) => handleSortingChange(column,order)}
+//onTitleChange={(title: string)
 export function DataTable<TData, TValue>({
   data,
   columns,
@@ -42,6 +44,7 @@ export function DataTable<TData, TValue>({
   onRowsPerPage,
   onPageChange,
   onSortingChange,
+  onTitleChange,
 }: DataTableProps<TData, TValue> & {
   totalPages: number;
   currentPage: number;
@@ -49,8 +52,8 @@ export function DataTable<TData, TValue>({
   onRowsPerPage: (page: number) => void;
   onPageChange: (page: number) => void;
   onSortingChange: (column: string, order: "asc" | "desc") => void;
+  onTitleChange: (title: string) => void;
 }) {
-
 
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
@@ -59,6 +62,9 @@ export function DataTable<TData, TValue>({
     []
   )
   const [sorting, setSorting] = React.useState<SortingState>([])
+
+
+
 
   const table = useReactTable({
     data,
@@ -92,7 +98,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} />
+      <DataTableToolbar table={table} onTitleChange={onTitleChange} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -143,7 +149,9 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination currentPage={currentPage}
+      <DataTablePagination
+          table={table}
+          currentPage={currentPage}
          rowsPerPage={rowsPerPage}
          totalPages={totalPages}
          onPageChange={onPageChange}

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 
 interface DataTablePaginationProps<TData> {
+  table: Table<TData>
   currentPage: number
   rowsPerPage: number
   totalPages: number
@@ -23,8 +24,8 @@ interface DataTablePaginationProps<TData> {
   onRowsPerPage: (page: number) => void
 }
 
-
 export function DataTablePagination<TData>({
+                                             table,
                                              currentPage,
                                              rowsPerPage,
                                              totalPages,
@@ -45,10 +46,13 @@ export function DataTablePagination<TData>({
   return (
       <div className="flex items-center justify-between px-2">
         <div className="flex items-center space-x-2">
-          <p className="text-sm font-medium">Rows per page</p>
+          <p className="text-sm font-medium">Rows per page </p>
           <Select
               value={`${rowsPerPage}`}
-              onValueChange={(value) => onRowsPerPage(Number(value))}
+              onValueChange={(value) =>{
+                  onRowsPerPage(Number(value))
+                  table.setPageSize(Number(value))
+          }}
           >
             <SelectTrigger className="h-8 w-[70px]">
               <SelectValue placeholder={`${rowsPerPage}`}/>
