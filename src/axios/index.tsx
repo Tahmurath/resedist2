@@ -3,7 +3,7 @@ import { getAuthToken } from "../services/authService";
 import { QueryClient } from "@tanstack/react-query";
 
 const axiosInstance = axios.create({
-  baseURL: "http://192.168.1.164:4000",
+  baseURL: "http://localhost:4000",
   timeout: 1000,
   headers: {
     Accept: "application/json",

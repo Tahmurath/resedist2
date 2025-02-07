@@ -1,5 +1,3 @@
-"use client"
-
 import * as React from "react"
 import {
   ColumnDef,
@@ -27,29 +25,33 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
-import {columns} from "@/pages/admin/tasks/components/columns.tsx";
+
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-
+// onSortingChange={(column: string, order: string) => handleSortingChange(column,order)}
 export function DataTable<TData, TValue>({
-                                           data,
-                                           columns,
-                                           totalPages,
-                                           currentPage,
-                                           rowsPerPage,
-                                           onRowsPerPage,
-                                           onPageChange,
-                                         }: DataTableProps<TData, TValue> & {
+  data,
+  columns,
+  totalPages,
+  currentPage,
+  rowsPerPage,
+  onRowsPerPage,
+  onPageChange,
+  onSortingChange,
+}: DataTableProps<TData, TValue> & {
   totalPages: number;
   currentPage: number;
   rowsPerPage: number;
   onRowsPerPage: (page: number) => void;
   onPageChange: (page: number) => void;
+  onSortingChange: (column: string, order: "asc" | "desc") => void;
 }) {
+
+
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -69,7 +71,15 @@ export function DataTable<TData, TValue>({
     },
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
+    onSortingChange: (updater) => {
+      const newSorting = typeof updater === "function" ? updater(sorting) : updater;
+      setSorting(newSorting);
+
+      const sortBy = newSorting[0]?.id || "";
+      const sortOrder = newSorting[0]?.desc ? "desc" : "asc";
+
+      onSortingChange(sortBy, sortOrder);
+    },
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
@@ -133,12 +143,11 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table}
-                           currentPage={currentPage}
-                           rowsPerPage={rowsPerPage}
-                           totalPages={totalPages}
-                           onPageChange={onPageChange}
-                           onRowsPerPage={onRowsPerPage}
+      <DataTablePagination currentPage={currentPage}
+         rowsPerPage={rowsPerPage}
+         totalPages={totalPages}
+         onPageChange={onPageChange}
+         onRowsPerPage={onRowsPerPage}
       />
     </div>
   )

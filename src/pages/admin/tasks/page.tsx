@@ -1,65 +1,55 @@
-import { z } from "zod"
+//import { z } from "zod"
 
 import { columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
 import { UserNav } from "./components/user-nav"
-import { taskSchema } from "./data/schema"
-import { useEffect, useState } from 'react';
+//import { taskSchema } from "./data/schema"
+import { useEffect, useState, useCallback  } from 'react';
 
 
-function TaskList2() {
-    const [tasks, setTasks] = useState([]);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    //const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        async function fetchTasks() {
-            try {
-                const response = await fetch('http://192.168.1.164:4000/api/v1/department2?page_size=10');
-                const data = await response.json();
-                console.log(data.data);
-                setTasks(data.data);
-                setTotalPages(data._pagination.total_pages);
-            } catch (error) {
-                console.error('Failed to fetch tasks:', error);
-            } finally {
-                //setLoading(false);
-            }
-        }
-
-        fetchTasks();
-    }, []);
-
-    return z.array(taskSchema).parse(tasks);
-}
-// Simulate a database read for tasks.
-
-
-export default function TaskPage() {
-    //const tasks = TaskList()
-
+const TaskList = () => {
     const [tasks, setTasks] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5)
     const [totalPages, setTotalPages] = useState(1);
+    const [sortColumn, setSortColumn] = useState<string | null>(null);
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
 
-    const fetchTasks = async (page: number,perPage: number) => {
+    const fetchTasks = useCallback(async () => {
         try {
-            const response = await fetch(`http://192.168.1.164:4000/api/v1/department2?page=${page}&page_size=${perPage}`);
-            const tasks = await response.json();
-            setTasks(tasks.data);
-            //console.log(data._pagination.total_pages);
-            setTotalPages(tasks._pagination.total_pages); // فرض کنید API تعداد کل صفحات را برمی‌گرداند
+            const queryParams = new URLSearchParams({
+                page: currentPage.toString(),
+                page_size: rowsPerPage.toString(),
+                ...(sortColumn && { sort: sortColumn }), // ستون مرتب‌سازی
+                ...(sortOrder && { order: sortOrder }), // ترتیب مرتب‌سازی
+            });
 
+            const response = await fetch(`http://localhost:4000/api/v1/department2?${queryParams}`);
+            const data = await response.json();
+            setTasks(data.data);
+            setTotalPages(data._pagination.total_pages);
         } catch (error) {
-            console.error('Failed to fetch tasks:', error);
+            console.error("Failed to fetch tasks:", error);
         }
-    };
+    }, [currentPage, rowsPerPage, sortColumn, sortOrder]);
 
     useEffect(() => {
-        fetchTasks(currentPage, rowsPerPage);
-    }, [currentPage,rowsPerPage]);
+        fetchTasks();
+    }, [fetchTasks]);
+
+    const handleSortingChange = (column: string, order: "asc" | "desc") => {
+        setSortColumn(column);
+        setSortOrder(order);
+    };
+
+    return { tasks, currentPage, rowsPerPage, totalPages, setCurrentPage, setRowsPerPage, handleSortingChange };
+}
+
+
+export default function TaskPage() {
+
+
+    const { tasks, currentPage, rowsPerPage, totalPages, setCurrentPage, setRowsPerPage, handleSortingChange } = TaskList();
 
 
     return (
@@ -84,6 +74,7 @@ export default function TaskPage() {
                     rowsPerPage={rowsPerPage}
                     onRowsPerPage={(page: number) => setRowsPerPage(page)}
                     onPageChange={(page: number) => setCurrentPage(page)}
+                    onSortingChange={(column: string, order: "asc" | "desc") => handleSortingChange(column,order)}
                 />
             </div>
         </>
