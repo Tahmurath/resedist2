@@ -5,6 +5,7 @@ import { DataTable } from "./components/data-table"
 import { UserNav } from "./components/user-nav"
 //import { taskSchema } from "./data/schema"
 import { useEffect, useState, useCallback  } from 'react';
+import {axiosInstance} from "@/axios";
 // import * as React from "react";
 
 
@@ -31,9 +32,10 @@ const TaskList = () => {
                 ...(title && title.length >= 2 && { title: title }),
                 //...(title && { title: title }),
             });
+            const response = await axiosInstance.get(`/api/v1/department?${queryParams}`);
+            const data = response.data;
 
-            const response = await fetch(`http://localhost:4000/api/v1/department2?${queryParams}`);
-            const data = await response.json();
+
             setTasks(data.data);
             setTotalPages(data._pagination.total_pages);
             setTotalRows(data._pagination.total_rows);
