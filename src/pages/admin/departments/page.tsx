@@ -1,104 +1,96 @@
-import { columns } from "./columns"
-import { DataTable } from "./data-table"
+import { columns } from "./components/columns"
+import { DataTable } from "./components/data-table"
+import { UserNav } from "./components/user-nav"
+import { useEffect, useState, useCallback  } from 'react';
+import {axiosInstance} from "@/axios";
 
-export default function DemoPage() {
 
-    const data = [
-        {
-            id: "728ed52f",
-            amount: 10,
-            status: "pending",
-            email: "aaa@example.com",
-        },
-        {
-            id: "728ed52f",
-            amount: 20,
-            status: "pending",
-            email: "bbbm@example.com",
-        },{
-            id: "728ed52f",
-            amount: 30,
-            status: "pending",
-            email: "cccm@example.com",
-        },
-        {
-            id: "728ed52f",
-            amount: 40,
-            status: "pending",
-            email: "dddm@example.com",
-        },{
-            id: "728ed52f",
-            amount: 50,
-            status: "pending",
-            email: "eeem@example.com",
-        },
-        {
-            id: "728ed52f",
-            amount: 60,
-            status: "pending",
-            email: "ffm@example.com",
-        },{
-            id: "728ed52f",
-            amount: 70,
-            status: "pending",
-            email: "ggm@example.com",
-        },
-        {
-            id: "728ed52f",
-            amount: 80,
-            status: "pending",
-            email: "hhm@example.com",
-        },{
-            id: "728ed52f",
-            amount: 90,
-            status: "pending",
-            email: "iim@example.com",
-        },
-        {
-            id: "728ed52f",
-            amount: 100,
-            status: "pending",
-            email: "wwwm@example.com",
-        },{
-            id: "728ed52f",
-            amount: 110,
-            status: "pending",
-            email: "sdsdm@example.com",
-        },
-        {
-            id: "728ed52f",
-            amount: 200,
-            status: "pending",
-            email: "safasdm@example.com",
-        },{
-            id: "728ed52f",
-            amount: 100,
-            status: "pending",
-            email: "jghjhm@example.com",
-        },
-        {
-            id: "728ed52f",
-            amount: 200,
-            status: "pending",
-            email: "ghjgm@example.com",
-        },{
-            id: "728ed52f",
-            amount: 100,
-            status: "pending",
-            email: "m@example.com",
-        },
-        {
-            id: "728ed52f",
-            amount: 200,
-            status: "pending",
-            email: "m@example.com",
-        },
-    ]
-    //const data =  getData()
+
+const Departments = () => {
+    const [departments, setDepartments] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(5)
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalRows, setTotalRows] = useState(0);
+    const [sortColumn, setSortColumn] = useState<string | null>(null);
+    const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
+    const [title, setTitle] = useState<string | null>(null);
+
+
+    const fetchDepartments = useCallback(async () => {
+
+        //console.log(title);
+        try {
+            const queryParams = new URLSearchParams({
+                page: currentPage.toString(),
+                page_size: rowsPerPage.toString(),
+                ...(sortColumn && { sort: sortColumn }),
+                ...(sortOrder && { order: sortOrder }),
+                ...(title && title.length >= 2 && { title: title }),
+            });
+            const response = await axiosInstance.get(`/api/v1/department?${queryParams}`);
+            const data = response.data;
+
+
+            setDepartments(data.data);
+            setTotalPages(data._pagination.total_pages);
+            setTotalRows(data._pagination.total_rows);
+        } catch (error) {
+            console.error("Failed to fetch departments:", error);
+        }
+    }, [currentPage, rowsPerPage, sortColumn, sortOrder, title]);
+
+    useEffect(() => {
+        fetchDepartments();
+    }, [fetchDepartments]);
+
+    const handleSortingChange = (column: string, order: "asc" | "desc") => {
+        setSortColumn(column);
+        setSortOrder(order);
+    };
+
+    const handleTitleChange = (title: string) => {
+        console.log(title)
+        setTitle(title);
+    };
+
+    return { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange };
+}
+
+
+export default function DepartmentPage() {
+
+
+    const { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange } = Departments();
+
 
     return (
-        <div className="container mx-auto py-10">
-            <DataTable columns={columns} data={data} />
-        </div>
+        <>
+            <div className=" h-full flex-1 flex-col space-y-8 p-8 md:flex">
+                <div className="flex items-center justify-between space-y-2">
+                    <div>
+                        <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+                        <p className="text-muted-foreground">
+                            Here&apos;s a list of your departments for this month!
+                        </p>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <UserNav />
+                    </div>
+                </div>
+                <DataTable
+                    data={departments}
+                    columns={columns}
+                    totalPages={totalPages}
+                    totalRows={totalRows}
+                    currentPage={currentPage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPage={(page: number) => setRowsPerPage(page)}
+                    onPageChange={(page: number) => setCurrentPage(page)}
+                    onSortingChange={(column: string, order: "asc" | "desc") => handleSortingChange(column,order)}
+                    onTitleChange={(title: string) => handleTitleChange(title)}
+                />
+            </div>
+        </>
     )
 }

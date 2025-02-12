@@ -59,7 +59,7 @@ function LightSidebarWithHeader() {
         { name: t("site.panel"), href: '/admin/panel', icon: UsersIcon, current: false },
         { name: t("site.department"), href: '/admin/department', icon: UsersIcon, current: false },
         { name: "fghfghf", href: '/admin/demo', icon: UsersIcon, current: false },
-        { name: "task", href: '/admin/task', icon: UsersIcon, current: false },
+        { name: t("site.departments"), href: '/admin/departments', icon: UsersIcon, current: false },
         // { name: 'About', href: '/about', icon: FolderIcon, current: false },
         // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
         // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },

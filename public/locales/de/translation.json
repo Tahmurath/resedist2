@@ -3,7 +3,8 @@
     "home": "Startseite",
     "admin": "Administratorin",
     "panel": "Bedienfeld",
-    "department": "Abteilung"
+    "department": "Abteilung",
+    "departments": "Abteilung"
   },
   "login": {
     "email": "Email Address",

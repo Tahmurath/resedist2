@@ -3,7 +3,8 @@
     "home": "Home",
     "admin": "Admin",
     "panel": "Panel",
-    "department": "Departments"
+    "department": "Department",
+    "departments": "Departments"
   },
   "login": {
     "email": "Email Address",
