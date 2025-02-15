@@ -44,6 +44,7 @@ export function DataTable<TData, TValue>({
   onPageChange,
   onSortingChange,
   onTitleChange,
+  onFilterChange,
 }: DataTableProps<TData, TValue> & {
   totalPages: number;
   totalRows: number;
@@ -53,6 +54,7 @@ export function DataTable<TData, TValue>({
   onPageChange: (page: number) => void;
   onSortingChange: (column: string, order: "asc" | "desc") => void;
   onTitleChange: (title: string) => void;
+  onFilterChange:(column: string, values: number[]) => void;
 }) {
 
   const [rowSelection, setRowSelection] = React.useState({})
@@ -89,7 +91,7 @@ export function DataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
+    //getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
@@ -98,7 +100,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4">
-      <DataTableToolbar table={table} onTitleChange={onTitleChange} />
+      <DataTableToolbar table={table} onTitleChange={onTitleChange} onFilterChange={onFilterChange} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>

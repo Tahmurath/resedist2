@@ -13,11 +13,13 @@ import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 interface DataTableToolbarProps<TData> {
     table: Table<TData>
     onTitleChange:(title: string) => void
+    onFilterChange:(column: string, values: number[]) => void
 }
 
 export function DataTableToolbar<TData>({
   table,
   onTitleChange,
+  onFilterChange,
 }: DataTableToolbarProps<TData>) {
   const isFiltered = table.getState().columnFilters.length > 0
 
@@ -33,6 +35,7 @@ export function DataTableToolbar<TData>({
           <DataTableFacetedFilter
             column={table.getColumn("departmentType")}
             title="departmentType"
+            onFilterChange={onFilterChange}
             options={departmentTypes}
           />
         )}
@@ -40,13 +43,19 @@ export function DataTableToolbar<TData>({
           <DataTableFacetedFilter
             column={table.getColumn("parent")}
             title="parent"
+            onFilterChange={onFilterChange}
             options={parents}
           />
         )}
         {isFiltered && (
           <Button
             variant="ghost"
-            onClick={() => table.resetColumnFilters()}
+            // onClick={() => table.resetColumnFilters()}
+            onClick={() => {
+              table.resetColumnFilters();
+              onFilterChange("departmentType",[]); // ریست کردن departmentTypes
+              onFilterChange("parent",[]); // ریست کردن parentIds
+            }}
             className="h-8 px-2 lg:px-3"
           >
             Reset

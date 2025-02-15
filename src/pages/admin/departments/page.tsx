@@ -16,10 +16,10 @@ const Departments = () => {
     const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
     const [title, setTitle] = useState<string | null>(null);
 
+    const [parentIds, setParentIds] = useState<number[] | null>([]);
+    const [departmentTypes, setDepartmentTypes] = useState<number[] | null>([]);
 
     const fetchDepartments = useCallback(async () => {
-
-        //console.log(title);
         try {
             const queryParams = new URLSearchParams({
                 page: currentPage.toString(),
@@ -27,22 +27,26 @@ const Departments = () => {
                 ...(sortColumn && { sort: sortColumn }),
                 ...(sortOrder && { order: sortOrder }),
                 ...(title && title.length >= 2 && { title: title }),
+                ...(parentIds?.length > 0 ? { parent: parentIds.join(",") } : {}),
+                ...(departmentTypes?.length > 0 ? { department_type: departmentTypes.join(",") } : {}),
             });
+    
             const response = await axiosInstance.get(`/api/v1/department?${queryParams}`);
             const data = response.data;
-
-
+    
             setDepartments(data.data);
             setTotalPages(data._pagination.total_pages);
             setTotalRows(data._pagination.total_rows);
         } catch (error) {
             console.error("Failed to fetch departments:", error);
         }
-    }, [currentPage, rowsPerPage, sortColumn, sortOrder, title]);
+    }, [currentPage, rowsPerPage, sortColumn, sortOrder, title, parentIds, departmentTypes]); 
+    
 
     useEffect(() => {
         fetchDepartments();
-    }, [fetchDepartments]);
+    }, [fetchDepartments, parentIds, departmentTypes]);
+    
 
     const handleSortingChange = (column: string, order: "asc" | "desc") => {
         setSortColumn(column);
@@ -53,15 +57,33 @@ const Departments = () => {
         console.log(title)
         setTitle(title);
     };
+    
+    const handleFilterChange = (column: string, values: number[]) => {
+        if (column === "departmentType") {
+            setDepartmentTypes(values.length > 0 ? values.map(v => Number(v)) : null);
+        } else if (column === "parent") {
+            setParentIds(values.length > 0 ? values.map(v => Number(v)) : null);
+        }
+    };
 
-    return { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange };
+    const handleFilterChange2 = (column: string, values: number[]) => {
+
+        console.info(column,values )
+        if (column === "departmentType") {
+            setDepartmentTypes(values);
+        } else if (column === "parent") {
+            setParentIds(values);
+        }
+    };
+
+    return { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange, handleFilterChange };
 }
 
 
 export default function DepartmentPage() {
 
 
-    const { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange } = Departments();
+    const { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange, handleFilterChange } = Departments();
 
 
     return (
@@ -89,6 +111,7 @@ export default function DepartmentPage() {
                     onPageChange={(page: number) => setCurrentPage(page)}
                     onSortingChange={(column: string, order: "asc" | "desc") => handleSortingChange(column,order)}
                     onTitleChange={(title: string) => handleTitleChange(title)}
+                    onFilterChange={(column: string, values: number[]) => handleFilterChange(column,values)}
                 />
             </div>
         </>

@@ -29,15 +29,31 @@ interface DataTableFacetedFilterProps<TData, TValue> {
     value: any
     icon?: React.ComponentType<{ className?: string }>
   }[]
+  onFilterChange:(column: string, values: number[]) => void
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
   options,
+  onFilterChange,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues()
   const selectedValues = new Set(column?.getFilterValue() as string[])
+
+
+  const handleSelectionChange = (value: string) => {
+    if (selectedValues.has(value)) {
+      selectedValues.delete(value)
+    } else {
+      selectedValues.add(value)
+    }
+    const filterValues = Array.from(selectedValues)
+    column?.setFilterValue(filterValues.length ? filterValues : undefined)
+
+    // ✅ اینجا متد onFilterChange را صدا می‌زنیم
+    onFilterChange(column.id, filterValues)
+  }
 
   return (
     <Popover>
@@ -91,18 +107,10 @@ export function DataTableFacetedFilter<TData, TValue>({
                 return (
                   <CommandItem
                     key={option.value}
-                    onSelect={() => {
-                      if (isSelected) {
-                        selectedValues.delete(option.value)
-                      } else {
-                        selectedValues.add(option.value)
-                      }
-                      const filterValues = Array.from(selectedValues)
-                      column?.setFilterValue(
-                        filterValues.length ? filterValues : undefined
-                      )
-                    }}
+                    onSelect={() => handleSelectionChange(option.value)} // 🎯 استفاده از تابع اصلاح‌شده
                   >
+
+                 
                     <div
                       className={cn(
                         "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
@@ -130,8 +138,11 @@ export function DataTableFacetedFilter<TData, TValue>({
               <>
                 <CommandSeparator />
                 <CommandGroup>
-                  <CommandItem
-                    onSelect={() => column?.setFilterValue(undefined)}
+                <CommandItem
+                    onSelect={() => {
+                      column?.setFilterValue(undefined)
+                      onFilterChange(column.id, []) // 🎯 در اینجا هم مقدار فیلتر را پاک کنیم
+                    }}
                     className="justify-center text-center"
                   >
                     Clear filters
