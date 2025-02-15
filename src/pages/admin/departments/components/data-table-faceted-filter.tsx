@@ -20,7 +20,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
-
+import { useEffect, useState, useCallback  } from 'react';
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
@@ -31,6 +31,7 @@ interface DataTableFacetedFilterProps<TData, TValue> {
     icon?: React.ComponentType<{ className?: string }>
   }[]
   onFilterChange:(column: string, values: number[]) => void
+  setSearchQuery: (query: string) => void;
 }
 
 export function DataTableFacetedFilter<TData, TValue>({
@@ -38,12 +39,27 @@ export function DataTableFacetedFilter<TData, TValue>({
   title,
   options,
   onFilterChange,
+  setSearchQuery,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues()
   const selectedValues = new Set(column?.getFilterValue() as string[])
 
+  options = options || [];  // اگر data null بود، آرایه خالی قرار می‌دهیم
+// setFilteredOptions(fetchedData);
+
+  // useEffect(() => {
+  //   if (options && options.length > 0) {
+  //     setFilteredOptions(options);
+  //   } else {
+  //     setFilteredOptions([]);
+  //   }
+  // }, [options]);
+
+  // React.useEffect
+
 
   const handleSelectionChange = (value: string) => {
+    
     if (selectedValues.has(value)) {
       selectedValues.delete(value)
     } else {
@@ -101,8 +117,11 @@ export function DataTableFacetedFilter<TData, TValue>({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0" align="start">
-        <Command>
-          <CommandInput placeholder={title} />
+      <Command shouldFilter={false}>
+          <CommandInput 
+          placeholder={title} 
+          onValueChange={setSearchQuery}
+          />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
@@ -128,7 +147,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     {option.icon && (
                       <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <span>{option.title}</span>
+                    <span>{option.title} - {option.id}</span>
                     {facets?.get(option.id) && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
                         {facets.get(option.id)}
@@ -145,7 +164,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandItem
                     onSelect={() => {
                       column?.setFilterValue(undefined)
-                      onFilterChange(column.id, []) // 🎯 در اینجا هم مقدار فیلتر را پاک کنیم
+                      onFilterChange(column?.id, []) // 🎯 در اینجا هم مقدار فیلتر را پاک کنیم
                     }}
                     className="justify-center text-center"
                   >

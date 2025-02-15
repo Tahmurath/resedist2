@@ -27,32 +27,42 @@ export function DataTableToolbar<TData>({
 
   const [parents, setParents] = useState([]);
   const [departmentTypes, setDepartmentTypes] = useState([]);
+  // const [searchQuerydep, setSearchQuerydep] = useState("");
+  // const [searchQuerypar, setSearchQuerypar] = useState("");
+  const [searchQueries, setSearchQueries] = useState<{ [key: string]: string }>({
+    departmentTypes: "",
+    parents: "",
+  });
   
-  const fetchDepartmentTypes = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get('/api/v1/department-type');
-      setDepartmentTypes(response.data.data); // departmentTypes را ذخیره می‌کنیم
-    } catch (error) {
-      console.error("Failed to fetch department types:", error);
-    }
-  }, []); // حذف وابستگی departmentTypes
   
-  const fetchParents = useCallback(async () => {
+  const fetchFilteredOptions = async (query: string, type: "departmentTypes" | "parents") => {
+    // if (query.length < 2) return; // جلوگیری از درخواست‌های غیرضروری
+  
+    const endpoint = type === "departmentTypes"
+    ? `/api/v1/department-type?title=${query}`
+    : `/api/v1/department?title=${query}`;
+
+
     try {
-      const response = await axiosInstance.get('/api/v1/department');
-      setParents(response.data.data); // parents را ذخیره می‌کنیم
+      const response = await axiosInstance.get(endpoint);
+      if (type === "departmentTypes") {
+        setDepartmentTypes(response.data.data);
+      } else if(type === "parents") {
+        setParents(response.data.data);
+      }
     } catch (error) {
-      console.error("Failed to fetch parents:", error);
+      console.error(`Error fetching ${type}:`, error);
     }
-  }, []); // حذف وابستگی parents
+  
+  };
   
   useEffect(() => {
-    fetchDepartmentTypes();
-  }, [fetchDepartmentTypes]); // فقط از fetchDepartmentTypes به عنوان وابستگی استفاده کنید
-  
+    fetchFilteredOptions(searchQueries.departmentTypes, "departmentTypes");
+  }, [searchQueries.departmentTypes]);
+
   useEffect(() => {
-    fetchParents();
-  }, [fetchParents]); // فقط از fetchParents به عنوان وابستگی استفاده کنید
+    fetchFilteredOptions(searchQueries.parents, "parents");
+  }, [searchQueries.parents]);
   
 
   return (
@@ -65,18 +75,26 @@ export function DataTableToolbar<TData>({
         />
         {table.getColumn("departmentType") && (
           <DataTableFacetedFilter
+            // key={departmentTypes.length}
             column={table.getColumn("departmentType")}
             title="departmentType"
             onFilterChange={onFilterChange}
             options={departmentTypes}
+            setSearchQuery={(query) =>
+              setSearchQueries((prev) => ({ ...prev, departmentTypes: query }))
+            }      
           />
         )}
         {table.getColumn("parent") && (
           <DataTableFacetedFilter
+            // key={parent.length}
             column={table.getColumn("parent")}
             title="parent"
             onFilterChange={onFilterChange}
             options={parents}
+            setSearchQuery={(query) =>
+              setSearchQueries((prev) => ({ ...prev, parents: query }))
+            }      
           />
         )}
         {isFiltered && (
