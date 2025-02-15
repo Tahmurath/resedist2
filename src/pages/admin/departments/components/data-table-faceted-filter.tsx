@@ -21,12 +21,13 @@ import {
 } from "@/components/ui/popover"
 import { Separator } from "@/components/ui/separator"
 
+
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
   title?: string
   options: {
-    label: string
-    value: any
+    title: string
+    id: any
     icon?: React.ComponentType<{ className?: string }>
   }[]
   onFilterChange:(column: string, values: number[]) => void
@@ -52,7 +53,10 @@ export function DataTableFacetedFilter<TData, TValue>({
     column?.setFilterValue(filterValues.length ? filterValues : undefined)
 
     // ✅ اینجا متد onFilterChange را صدا می‌زنیم
-    onFilterChange(column.id, filterValues)
+    column ? (onFilterChange(column?.id, filterValues.map((str) => Number(str)))) : (
+      console.info("onFilterChange error")
+    )
+    
   }
 
   return (
@@ -80,14 +84,14 @@ export function DataTableFacetedFilter<TData, TValue>({
                   </Badge>
                 ) : (
                   options
-                    .filter((option) => selectedValues.has(option.value))
+                    .filter((option) => selectedValues.has(option.id))
                     .map((option) => (
                       <Badge
                         variant="secondary"
-                        key={option.value}
+                        key={option.id}
                         className="rounded-sm px-1 font-normal"
                       >
-                        {option.label}
+                        {option.title}
                       </Badge>
                     ))
                 )}
@@ -103,11 +107,11 @@ export function DataTableFacetedFilter<TData, TValue>({
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
-                const isSelected = selectedValues.has(option.value)
+                const isSelected = selectedValues.has(option.id)
                 return (
                   <CommandItem
-                    key={option.value}
-                    onSelect={() => handleSelectionChange(option.value)} // 🎯 استفاده از تابع اصلاح‌شده
+                    key={option.id}
+                    onSelect={() => handleSelectionChange(option.id)} // 🎯 استفاده از تابع اصلاح‌شده
                   >
 
                  
@@ -124,10 +128,10 @@ export function DataTableFacetedFilter<TData, TValue>({
                     {option.icon && (
                       <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
                     )}
-                    <span>{option.label}</span>
-                    {facets?.get(option.value) && (
+                    <span>{option.title}</span>
+                    {facets?.get(option.id) && (
                       <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                        {facets.get(option.value)}
+                        {facets.get(option.id)}
                       </span>
                     )}
                   </CommandItem>
