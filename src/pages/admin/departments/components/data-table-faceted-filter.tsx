@@ -34,6 +34,7 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   setSearchQuery: (query: string) => void;
 }
 
+
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
@@ -44,18 +45,20 @@ export function DataTableFacetedFilter<TData, TValue>({
   const facets = column?.getFacetedUniqueValues()
   const selectedValues = new Set(column?.getFilterValue() as string[])
 
-  options = options || [];  // اگر data null بود، آرایه خالی قرار می‌دهیم
-// setFilteredOptions(fetchedData);
+  // const [selectedValues, setSelectedValues] = useState(new Set<string>());
+
 
   // useEffect(() => {
-  //   if (options && options.length > 0) {
-  //     setFilteredOptions(options);
-  //   } else {
-  //     setFilteredOptions([]);
-  //   }
+  //   // مطمئن میشیم که فقط گزینه‌های موجود در options انتخاب شده باشن
+  //   const updatedSelectedValues = new Set(
+  //     Array.from(selectedValues).filter((value) =>
+  //       options.some((option) => option.id === value)
+  //     )
+  //   );
+  //   setSelectedValues(updatedSelectedValues);
   // }, [options]);
 
-  // React.useEffect
+  options = options || []; 
 
 
   const handleSelectionChange = (value: string) => {
@@ -68,12 +71,14 @@ export function DataTableFacetedFilter<TData, TValue>({
     const filterValues = Array.from(selectedValues)
     column?.setFilterValue(filterValues.length ? filterValues : undefined)
 
-    // ✅ اینجا متد onFilterChange را صدا می‌زنیم
+  
     column ? (onFilterChange(column?.id, filterValues.map((str) => Number(str)))) : (
       console.info("onFilterChange error")
     )
     
   }
+
+  
 
   return (
     <Popover>
@@ -91,7 +96,13 @@ export function DataTableFacetedFilter<TData, TValue>({
                 {selectedValues.size}
               </Badge>
               <div className="hidden space-x-1 lg:flex">
-                {selectedValues.size > 2 ? (
+              <Badge
+                    variant="secondary"
+                    className="rounded-sm px-1 font-normal"
+                  >
+                    {selectedValues.size} selected
+                  </Badge>
+                {/* {selectedValues.size > 2 ? (
                   <Badge
                     variant="secondary"
                     className="rounded-sm px-1 font-normal"
@@ -110,7 +121,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                         {option.title}
                       </Badge>
                     ))
-                )}
+                )} */}
               </div>
             </>
           )}

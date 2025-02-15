@@ -33,7 +33,7 @@ export function DataTableToolbar<TData>({
     departmentTypes: "",
     parents: "",
   });
-  
+
   
   const fetchFilteredOptions = async (query: string, type: "departmentTypes" | "parents") => {
     // if (query.length < 2) return; // جلوگیری از درخواست‌های غیرضروری
