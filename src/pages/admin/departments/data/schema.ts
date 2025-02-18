@@ -5,9 +5,17 @@ import { z } from "zod"
 export const departmentSchema = z.object({
   id: z.number(),
   title: z.string(),
-  departmentType: z.number(),
   label: z.string(),
-  parent: z.number(),
+  //departmentType: z.number(),
+  //parent: z.number(),
+  departmentType: z.object({
+    id: z.number(),
+    title: z.string(),
+  }).optional(),
+  parent: z.object({
+    id: z.number(),
+    title: z.string(),
+  }).nullable(),
 })
 
 export type Department = z.infer<typeof departmentSchema>
