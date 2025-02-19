@@ -99,67 +99,75 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div className="space-y-4">
-      <DataTableToolbar table={table} onTitleChange={onTitleChange} onFilterChange={onFilterChange} />
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+    <div className="space-y-4 ">
+      <div className="bg-muted/50 border rounded-[0.5rem]">
+        <div className="p-4">
+          <DataTableToolbar table={table} onTitleChange={onTitleChange} onFilterChange={onFilterChange}/>
+        </div>
+
+        <div className="rounded-xl border-t border-b bg-card">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      return (
+                          <TableHead key={header.id} colSpan={header.colSpan}>
+                            {header.isPlaceholder
+                                ? null
+                                : flexRender(
+                                    header.column.columnDef.header,
+                                    header.getContext()
+                                )}
+                          </TableHead>
+                      )
+                    })}
+                  </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                      <TableRow
+                          key={row.id}
+                          data-state={row.getIsSelected() && "selected"}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                            <TableCell key={cell.id}>
+                              {flexRender(
+                                  cell.column.columnDef.cell,
+                                  cell.getContext()
+                              )}
+                            </TableCell>
+                        ))}
+                      </TableRow>
+                  ))
+              ) : (
+                  <TableRow>
+                    <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                    >
+                      No results.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+                  </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="p-4">
+          <DataTablePagination
+              table={table}
+              currentPage={currentPage}
+              rowsPerPage={rowsPerPage}
+              totalPages={totalPages}
+              totalRows={totalRows}
+              onPageChange={onPageChange}
+              onRowsPerPage={onRowsPerPage}
+          />
+        </div>
+        </div>
+
       </div>
-      <DataTablePagination
-          table={table}
-          currentPage={currentPage}
-         rowsPerPage={rowsPerPage}
-         totalPages={totalPages}
-         totalRows={totalRows}
-         onPageChange={onPageChange}
-         onRowsPerPage={onRowsPerPage}
-      />
-    </div>
-  )
-}
+      )
+      }

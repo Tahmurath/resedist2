@@ -46,6 +46,10 @@ export function DataTablePagination<TData>({
 
     return (
         <div className="flex items-center justify-between px-2">
+            <div className="flex-1 text-sm text-muted-foreground hidden lg:flex">
+                {table.getFilteredSelectedRowModel().rows.length} of{" "}
+                {totalRows} row(s) selected.
+            </div>
             <div className="flex items-center space-x-2 text-sm font-medium">
                 <p className="text-sm font-medium hidden lg:flex ">Rows per page </p>
                 <Select
@@ -66,7 +70,7 @@ export function DataTablePagination<TData>({
                         ))}
                     </SelectContent>
                 </Select>
-                <p className="text-sm font-medium hidden lg:flex">rows of {totalRows} Rows</p>
+
 
             </div>
             <div className="flex w-[100px] items-center justify-center text-sm font-medium">

@@ -391,8 +391,11 @@ function LightSidebarWithHeader() {
                     </div>
 
                     <main className="py-10">
-                        <div className="px-4 sm:px-6 lg:px-8">
+                        <div className="px-4 sm:px-6 lg:px-8 ">
+                            {/*<div className="rounded-xl border bg-card text-card-foreground shadow">*/}
+                            <div className="">
                             <Outlet/>
+                            </div>
                         </div>
                     </main>
                 </div>

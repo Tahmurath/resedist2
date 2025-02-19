@@ -83,6 +83,7 @@ export const columns: ColumnDef<Department>[] = [
         </div>
       )
     },
+    enableSorting: false,
   },
   {
     accessorKey: "parent",
@@ -101,6 +102,7 @@ export const columns: ColumnDef<Department>[] = [
         </div>
       )
     },
+    enableSorting: false,
   },
   // {
   //   accessorKey: "departmentType",
