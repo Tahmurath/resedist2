@@ -15,7 +15,7 @@ export const departmentSchema = z.object({
   parent: z.object({
     id: z.number(),
     title: z.string(),
-  }).nullable(),
+  }).nullable().optional(),
 })
 
 export type Department = z.infer<typeof departmentSchema>
