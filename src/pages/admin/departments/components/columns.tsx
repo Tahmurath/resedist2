@@ -10,6 +10,10 @@ import { Department } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
 
+import { useTranslation } from "react-i18next";
+
+// const { t } = useTranslation();
+
 export const columns: ColumnDef<Department>[] = [
   {
     id: "select",

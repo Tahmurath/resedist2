@@ -4,7 +4,9 @@
     "admin": "Administratorin",
     "panel": "Bedienfeld",
     "department": "Abteilung",
-    "departments": "Abteilung"
+    "departments": "Abteilung",
+    "deptype": "Dep. Type",
+    "parent": "Parent Dep."
   },
   "login": {
     "email": "Email Address",

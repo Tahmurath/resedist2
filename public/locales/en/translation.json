@@ -4,7 +4,9 @@
     "admin": "Admin",
     "panel": "Panel",
     "department": "Department",
-    "departments": "Departments"
+    "departments": "Departments",
+    "deptype": "Dep. Type",
+    "parent": "Parent Dep."
   },
   "login": {
     "email": "Email Address",

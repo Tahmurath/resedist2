@@ -4,7 +4,9 @@
     "admin": "مدیریت",
     "panel": "پنل",
     "department": "ارگان",
-    "departments": "ارگان ها"
+    "departments": "ارگان ها",
+    "deptype": "نوع ارگان",
+    "parent": "ارگان والد"
   },
   "login": {
     "email": "Email Address",

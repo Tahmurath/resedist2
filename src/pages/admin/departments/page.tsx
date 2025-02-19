@@ -3,7 +3,7 @@ import { DataTable } from "./components/data-table"
 import { UserNav } from "./components/user-nav"
 import { useEffect, useState, useCallback  } from 'react';
 import {axiosInstance} from "@/axios";
-
+import { useTranslation } from "react-i18next";
 
 
 const Departments = () => {
@@ -18,6 +18,7 @@ const Departments = () => {
 
     const [parentIds, setParentIds] = useState<number[] | null>([]);
     const [departmentTypes, setDepartmentTypes] = useState<number[] | null>([]);
+    
 
     const fetchDepartments = useCallback(async () => {
         try {
@@ -85,19 +86,17 @@ export default function DepartmentPage() {
 
     const { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange, handleFilterChange } = Departments();
 
+    const { t } = useTranslation();
 
     return (
         <>
             <div className=" h-full flex-1 flex-col space-y-8 p-8 md:flex">
                 <div className="flex items-center justify-between space-y-2">
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight">Welcome back!</h2>
+                        <h2 className="text-2xl font-bold tracking-tight">{t("site.departments")}</h2>
                         <p className="text-muted-foreground">
-                            Here&apos;s a list of your departments for this month!
+                            Here&apos;s a list of your {t("site.departments")} for this month!
                         </p>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <UserNav />
                     </div>
                 </div>
                 <DataTable

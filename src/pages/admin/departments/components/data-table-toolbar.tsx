@@ -11,6 +11,7 @@ import { DataTableViewOptions } from "./data-table-view-options"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 import {axiosInstance} from "@/axios";
 import { useEffect, useState, useCallback  } from 'react';
+import { useTranslation } from "react-i18next";
 
 interface DataTableToolbarProps<TData> {
     table: Table<TData>
@@ -23,6 +24,9 @@ export function DataTableToolbar<TData>({
   onTitleChange,
   onFilterChange,
 }: DataTableToolbarProps<TData>) {
+
+  const { t } = useTranslation();
+
   const isFiltered = table.getState().columnFilters.length > 0
 
   const [parents, setParents] = useState([]);
@@ -77,7 +81,7 @@ export function DataTableToolbar<TData>({
           <DataTableFacetedFilter
             // key={departmentTypes.length}
             column={table.getColumn("departmentType")}
-            title="departmentType"
+            title={t("site.deptype")}
             onFilterChange={onFilterChange}
             options={departmentTypes}
             setSearchQuery={(query) =>
@@ -89,7 +93,7 @@ export function DataTableToolbar<TData>({
           <DataTableFacetedFilter
             // key={parent.length}
             column={table.getColumn("parent")}
-            title="parent"
+            title={t("site.parent")}
             onFilterChange={onFilterChange}
             options={parents}
             setSearchQuery={(query) =>
