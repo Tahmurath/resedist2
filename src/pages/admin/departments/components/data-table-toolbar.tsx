@@ -72,58 +72,60 @@ export function DataTableToolbar<TData>({
   
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
-        <Input
-            placeholder="Filter Departments..."
-            onChange={(event) => onTitleChange(event.target.value)}
-            className="h-8 w-[150px] lg:w-[250px]"
-        />
-        <div className="hidden lg:flex">
-          {table.getColumn("departmentType") && (
-              <DataTableFacetedFilter
-                  // key={departmentTypes.length}
-                  column={table.getColumn("departmentType")}
-                  title={t("site.deptype")}
-                  onFilterChange={onFilterChange}
-                  options={departmentTypes}
-                  setSearchQuery={(query) =>
-                      setSearchQueries((prev) => ({...prev, departmentTypes: query}))
-                  }
-              />
-          )}
+      <div className="flex items-center justify-between">
+
+
+        <div className="flex flex-1 items-center space-x-2">
+          <Input
+              placeholder="Filter Departments..."
+              onChange={(event) => onTitleChange(event.target.value)}
+              className="h-8 w-[150px] lg:w-[250px]"
+          />
+          <div className="hidden lg:flex">
+            {table.getColumn("departmentType") && (
+                <DataTableFacetedFilter
+                    // key={departmentTypes.length}
+                    column={table.getColumn("departmentType")}
+                    title={t("site.deptype")}
+                    onFilterChange={onFilterChange}
+                    options={departmentTypes}
+                    setSearchQuery={(query) =>
+                        setSearchQueries((prev) => ({...prev, departmentTypes: query}))
+                    }
+                />
+            )}
+          </div>
+          <div className="hidden lg:flex">
+            {table.getColumn("parent") && (
+                <DataTableFacetedFilter
+                    // key={parent.length}
+                    column={table.getColumn("parent")}
+                    title={t("site.parent")}
+                    onFilterChange={onFilterChange}
+                    options={parents}
+                    setSearchQuery={(query) =>
+                        setSearchQueries((prev) => ({...prev, parents: query}))
+                    }
+                />
+            )}
+            {isFiltered && (
+                <Button
+                    variant="ghost"
+                    // onClick={() => table.resetColumnFilters()}
+                    onClick={() => {
+                      table.resetColumnFilters();
+                      onFilterChange("departmentType", []); // ریست کردن departmentTypes
+                      onFilterChange("parent", []); // ریست کردن parentIds
+                    }}
+                    className="h-8 px-2 lg:px-3"
+                >
+                  Reset
+                  <X/>
+                </Button>
+            )}
+          </div>
         </div>
-        <div className="hidden lg:flex">
-          {table.getColumn("parent") && (
-              <DataTableFacetedFilter
-                  // key={parent.length}
-                  column={table.getColumn("parent")}
-                  title={t("site.parent")}
-                  onFilterChange={onFilterChange}
-                  options={parents}
-                  setSearchQuery={(query) =>
-                      setSearchQueries((prev) => ({...prev, parents: query}))
-                  }
-              />
-          )}
-          {isFiltered && (
-              <Button
-                  variant="ghost"
-                  // onClick={() => table.resetColumnFilters()}
-                  onClick={() => {
-                    table.resetColumnFilters();
-                    onFilterChange("departmentType", []); // ریست کردن departmentTypes
-                    onFilterChange("parent", []); // ریست کردن parentIds
-                  }}
-                  className="h-8 px-2 lg:px-3"
-              >
-                Reset
-                <X/>
-              </Button>
-          )}
-        </div>
+        <DataTableViewOptions table={table}/>
       </div>
-      <DataTableViewOptions table={table} />
-    </div>
   )
 }

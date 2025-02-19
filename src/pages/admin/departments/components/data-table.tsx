@@ -24,6 +24,7 @@ import {
 
 import { DataTablePagination } from "./data-table-pagination"
 import { DataTableToolbar } from "./data-table-toolbar"
+import {NavLink} from "react-router";
 
 
 
@@ -99,7 +100,15 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="space-y-4 ">
-      <div className="bg-muted/50 border rounded-[0.5rem]">
+      <div className="bg-muted/40 border rounded-[0.5rem]">
+        <div className="flex  flex-wrap border-b bg-muted/80 pl-4">
+          <NavLink className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+             to="/admin/panel">Add new department
+          </NavLink>
+          <NavLink className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+             to="/admin">Add new
+          </NavLink>
+        </div>
         <div className="p-4">
           <DataTableToolbar table={table} onTitleChange={onTitleChange} onFilterChange={onFilterChange}/>
         </div>
@@ -165,8 +174,8 @@ export function DataTable<TData, TValue>({
               onRowsPerPage={onRowsPerPage}
           />
         </div>
-        </div>
-
       </div>
-      )
-      }
+
+    </div>
+  )
+}
