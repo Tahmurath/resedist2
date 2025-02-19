@@ -1,5 +1,5 @@
 import * as React from "react"
-import { Column } from "@tanstack/react-table"
+import {Column, Table} from "@tanstack/react-table"
 import { Check, PlusCircle } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -45,29 +45,38 @@ export function DataTableFacetedFilter<TData, TValue>({
   const facets = column?.getFacetedUniqueValues()
   const selectedValues = new Set(column?.getFilterValue() as string[])
 
-  // const [selectedValues, setSelectedValues] = useState(new Set<string>());
-
-
-  // useEffect(() => {
-  //   // مطمئن میشیم که فقط گزینه‌های موجود در options انتخاب شده باشن
-  //   const updatedSelectedValues = new Set(
-  //     Array.from(selectedValues).filter((value) =>
-  //       options.some((option) => option.id === value)
-  //     )
-  //   );
-  //   setSelectedValues(updatedSelectedValues);
-  // }, [options]);
+  const [selectedLabels, setSelectedLabels] = useState<{ [key: string]: string }>({});
 
   options = options || []; 
 
 
   const handleSelectionChange = (value: string) => {
-    
+
+
+    const option = options.find((opt) => opt.id === value);
+
+    if(selectedValues.size <=0){
+      setSelectedLabels((prevLabels) => ({}))
+    }
+
     if (selectedValues.has(value)) {
       selectedValues.delete(value)
+      setSelectedLabels((prevLabels) => {
+        const newLabels = { ...prevLabels };
+        delete newLabels[value];
+        return newLabels;
+      });
     } else {
       selectedValues.add(value)
+      if (option) {
+        setSelectedLabels((prevLabels) => ({
+          ...prevLabels,
+          [value]: option.title,
+        }));
+      }
     }
+
+
     const filterValues = Array.from(selectedValues)
     column?.setFilterValue(filterValues.length ? filterValues : undefined)
 
@@ -78,7 +87,6 @@ export function DataTableFacetedFilter<TData, TValue>({
     
   }
 
-  
 
   return (
     <Popover>
@@ -96,32 +104,25 @@ export function DataTableFacetedFilter<TData, TValue>({
                 {selectedValues.size}
               </Badge>
               <div className="hidden space-x-1 lg:flex">
-              <Badge
-                    variant="secondary"
-                    className="rounded-sm px-1 font-normal"
-                  >
-                    {selectedValues.size} selected
-                  </Badge>
-                {/* {selectedValues.size > 2 ? (
+                {
+                  selectedValues.size > 5 ? (
+                      <Badge
+                          variant="secondary"
+                          className="rounded-sm px-1 font-normal"
+                      >
+                        {selectedValues.size} selected
+                      </Badge>
+                          ) : (
+                  Object.entries(selectedLabels).map(([key, value]) => (
                   <Badge
                     variant="secondary"
-                    className="rounded-sm px-1 font-normal"
+                    key={key}
+                  className="rounded-sm px-1 font-normal"
                   >
-                    {selectedValues.size} selected
+                    {value}
                   </Badge>
-                ) : (
-                  options
-                    .filter((option) => selectedValues.has(option.id))
-                    .map((option) => (
-                      <Badge
-                        variant="secondary"
-                        key={option.id}
-                        className="rounded-sm px-1 font-normal"
-                      >
-                        {option.title}
-                      </Badge>
-                    ))
-                )} */}
+                  ))
+                  )}
               </div>
             </>
           )}
@@ -175,7 +176,8 @@ export function DataTableFacetedFilter<TData, TValue>({
                 <CommandItem
                     onSelect={() => {
                       column?.setFilterValue(undefined)
-                      onFilterChange(column?.id, []) // 🎯 در اینجا هم مقدار فیلتر را پاک کنیم
+                      onFilterChange(column?.id, [])
+                      setSelectedLabels((prevLabels) => ({}))
                     }}
                     className="justify-center text-center"
                   >

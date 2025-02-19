@@ -47,7 +47,7 @@ export function DataTablePagination<TData>({
     return (
         <div className="flex items-center justify-between px-2">
             <div className="flex items-center space-x-2 text-sm font-medium">
-                <p className="text-sm font-medium ">Rows per page </p>
+                <p className="text-sm font-medium hidden lg:flex ">Rows per page </p>
                 <Select
                     value={`${rowsPerPage}`}
                     onValueChange={(value) => {
@@ -66,7 +66,7 @@ export function DataTablePagination<TData>({
                         ))}
                     </SelectContent>
                 </Select>
-                <p className="text-sm font-medium ">rows of {totalRows} Rows</p>
+                <p className="text-sm font-medium hidden lg:flex">rows of {totalRows} Rows</p>
 
             </div>
             <div className="flex w-[100px] items-center justify-center text-sm font-medium">

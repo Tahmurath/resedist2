@@ -23,6 +23,7 @@ const Departments = () => {
     const fetchDepartments = useCallback(async () => {
         try {
             const queryParams = new URLSearchParams({
+                expand: true,
                 page: currentPage.toString(),
                 page_size: rowsPerPage.toString(),
                 ...(sortColumn && { sort: sortColumn }),

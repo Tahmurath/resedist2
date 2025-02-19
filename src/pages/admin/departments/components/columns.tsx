@@ -72,25 +72,16 @@ export const columns: ColumnDef<Department>[] = [
       <DataTableColumnHeader column={column} title="departmentType" />
     ),
     cell: ({ row }) => {
-      const departmentType = departmentTypes.find(
-        (departmentType) => departmentType.value === row.getValue("departmentType")
-      )
-
-      if (!departmentType) {
-        return null
-      }
+      const label = labels.find((label) => label.value === row.original.label)
 
       return (
-        <div className="flex w-[100px] items-center">
-          {departmentType.icon && (
-            <departmentType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
-          <span>{departmentType.label}</span>
+        <div className="flex space-x-2">
+          {label && <Badge variant="outline">{label.label}</Badge>}
+          <span className="max-w-[500px] truncate font-medium">
+            {row.getValue("departmentType")?.title}
+          </span>
         </div>
       )
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
     },
   },
   {
@@ -99,27 +90,72 @@ export const columns: ColumnDef<Department>[] = [
       <DataTableColumnHeader column={column} title="parent" />
     ),
     cell: ({ row }) => {
-      const parent = parents.find(
-        (parent) => parent.value === row.getValue("parent")
-      )
-
-      if (!parent) {
-        return null
-      }
+      const label = labels.find((label) => label.value === row.original.label)
 
       return (
-        <div className="flex items-center">
-          {parent.icon && (
-            <parent.icon className="mr-2 h-4 w-4 text-muted-foreground" />
-          )}
-          <span>{parent.label}</span>
+        <div className="flex space-x-2">
+          {label && <Badge variant="outline">{label.label}</Badge>}
+          <span className="max-w-[500px] truncate font-medium">
+           {row.getValue("parent")?.title ?? "بدون والد"}
+          </span>
         </div>
       )
     },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id))
-    },
   },
+  // {
+  //   accessorKey: "departmentType",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="departmentType" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     const departmentType = departmentTypes.find(
+  //       (departmentType) => departmentType.value === row.getValue("departmentType")
+  //     )
+  //
+  //     if (!departmentType) {
+  //       return null
+  //     }
+  //
+  //     return (
+  //       <div className="flex w-[100px] items-center">
+  //         {departmentType.icon && (
+  //           <departmentType.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+  //         )}
+  //         <span>{row.getValue("departmentType")?.title}</span>
+  //       </div>
+  //     )
+  //   },
+  //   filterFn: (row, id, value) => {
+  //     return value.includes(row.getValue(id))
+  //   },
+  // },
+  // {
+  //   accessorKey: "parent",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="parent" />
+  //   ),
+  //   cell: ({ row }) => {
+  //     const parent = parents.find(
+  //       (parent) => parent.value === row.getValue("parent")
+  //     )
+  //
+  //     if (!parent) {
+  //       return null
+  //     }
+  //
+  //     return (
+  //       <div className="flex items-center">
+  //         {parent.icon && (
+  //           <parent.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+  //         )}
+  //         <span>{parent.label}</span>
+  //       </div>
+  //     )
+  //   },
+  //   filterFn: (row, id, value) => {
+  //     return value.includes(row.getValue(id))
+  //   },
+  // },
   {
     id: "actions",
     cell: ({ row }) => <DataTableRowActions row={row} />,
