@@ -1,6 +1,5 @@
 import { columns } from "./components/columns"
 import { DataTable } from "./components/data-table"
-import { UserNav } from "./components/user-nav"
 import { useEffect, useState, useCallback  } from 'react';
 import {axiosInstance} from "@/axios";
 import { useTranslation } from "react-i18next";
@@ -23,14 +22,14 @@ const Departments = () => {
     const fetchDepartments = useCallback(async () => {
         try {
             const queryParams = new URLSearchParams({
-                expand: true,
+                expand: "true",
                 page: currentPage.toString(),
                 page_size: rowsPerPage.toString(),
                 ...(sortColumn && { sort: sortColumn }),
                 ...(sortOrder && { order: sortOrder }),
                 ...(title && title.length >= 2 && { title: title }),
-                ...(parentIds?.length > 0 ? { parent: parentIds.join(",") } : {}),
-                ...(departmentTypes?.length > 0 ? { department_type: departmentTypes.join(",") } : {}),
+                ...(parentIds?.length ? { parent: parentIds.join(",") } : {}),
+                ...(departmentTypes?.length ? { department_type: departmentTypes.join(",") } : {}),
             });
     
             const response = await axiosInstance.get(`/api/v1/department?${queryParams}`);
@@ -65,16 +64,6 @@ const Departments = () => {
             setDepartmentTypes(values.length > 0 ? values.map(v => Number(v)) : null);
         } else if (column === "parent") {
             setParentIds(values.length > 0 ? values.map(v => Number(v)) : null);
-        }
-    };
-
-    const handleFilterChange2 = (column: string, values: number[]) => {
-
-        console.info(column,values )
-        if (column === "departmentType") {
-            setDepartmentTypes(values);
-        } else if (column === "parent") {
-            setParentIds(values);
         }
     };
 

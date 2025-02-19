@@ -5,12 +5,10 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 
-import { labels, parents, departmentTypes } from "../data/data"
+import { labels } from "../data/data"
 import { Department } from "../data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
-
-import { useTranslation } from "react-i18next";
 
 // const { t } = useTranslation();
 
@@ -78,7 +76,8 @@ export const columns: ColumnDef<Department>[] = [
         <div className="flex space-x-2">
           {label && <Badge variant="outline">{label.label}</Badge>}
           <span className="max-w-[500px] truncate font-medium">
-            {row.getValue("departmentType")?.title}
+            {/*{row.getValue("departmentType")?.title}*/}
+            {(row.getValue("departmentType") as { title: string })?.title}
           </span>
         </div>
       )
@@ -97,7 +96,8 @@ export const columns: ColumnDef<Department>[] = [
         <div className="flex space-x-2">
           {label && <Badge variant="outline">{label.label}</Badge>}
           <span className="max-w-[500px] truncate font-medium">
-           {row.getValue("parent")?.title ?? "بدون والد"}
+            {(row.getValue("parent") as { title?: string } | null)?.title ?? "بدون والد"}
+
           </span>
         </div>
       )

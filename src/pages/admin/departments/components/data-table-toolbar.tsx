@@ -9,7 +9,7 @@ import { DataTableViewOptions } from "./data-table-view-options"
 // import { parents, departmentTypes } from "../data/data"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 import {axiosInstance} from "@/axios";
-import { useEffect, useState, useCallback  } from 'react';
+import { useEffect, useState  } from 'react';
 import { useTranslation } from "react-i18next";
 // import {string} from "zod";
 
