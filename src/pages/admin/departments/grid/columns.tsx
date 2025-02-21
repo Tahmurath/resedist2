@@ -2,12 +2,10 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 
-import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 
-import { labels } from "../data/data"
-import { Department } from "../data/schema"
-import { DataTableColumnHeader } from "./data-table-column-header"
+import { Department } from "./schema.ts"
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header.tsx"
 import { DataTableRowActions } from "./data-table-row-actions"
 
 // const { t } = useTranslation();
@@ -52,11 +50,9 @@ export const columns: ColumnDef<Department>[] = [
       <DataTableColumnHeader column={column} title="Title" />
     ),
     cell: ({ row }) => {
-      const label = labels.find((label) => label.value === row.original.label)
 
       return (
         <div className="flex space-x-2">
-          {label && <Badge variant="outline">{label.label}</Badge>}
           <span className="max-w-[500px] truncate font-medium">
             {row.getValue("title")}
           </span>
@@ -70,13 +66,12 @@ export const columns: ColumnDef<Department>[] = [
       <DataTableColumnHeader column={column} title="departmentType" />
     ),
     cell: ({ row }) => {
-      const label = labels.find((label) => label.value === row.original.label)
 
       return (
         <div className="flex space-x-2">
-          {label && <Badge variant="outline">{label.label}</Badge>}
+
           <span className="max-w-[500px] truncate font-medium">
-            {/*{row.getValue("departmentType")?.title}*/}
+
             {(row.getValue("departmentType") as { title: string })?.title}
           </span>
         </div>
@@ -90,11 +85,11 @@ export const columns: ColumnDef<Department>[] = [
       <DataTableColumnHeader column={column} title="parent" />
     ),
     cell: ({ row }) => {
-      const label = labels.find((label) => label.value === row.original.label)
+
 
       return (
         <div className="flex space-x-2">
-          {label && <Badge variant="outline">{label.label}</Badge>}
+
           <span className="max-w-[500px] truncate font-medium">
             {(row.getValue("parent") as { title?: string } | null)?.title ?? "بدون والد"}
 

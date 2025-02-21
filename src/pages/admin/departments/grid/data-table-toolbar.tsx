@@ -4,10 +4,10 @@ import { X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { DataTableViewOptions } from "./data-table-view-options"
+import { DataTableViewOptions } from "@/components/data-table/data-table-view-options.tsx"
 
 // import { parents, departmentTypes } from "../data/data"
-import { DataTableFacetedFilter } from "./data-table-faceted-filter"
+import { DataTableFacetedFilter } from "@/components/data-table/data-table-faceted-filter.tsx"
 import {axiosInstance} from "@/axios";
 import { useEffect, useState  } from 'react';
 import { useTranslation } from "react-i18next";
@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 interface DataTableToolbarProps<TData> {
     table: Table<TData>
     onTitleChange:(title: string) => void
-    onFilterChange:(column: string, values: number[]) => void
+    onFilterChange:(column: string | undefined, values: number[]) => void
 }
 
 // var reset:boolean = false

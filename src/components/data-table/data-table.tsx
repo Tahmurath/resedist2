@@ -1,16 +1,6 @@
-import * as React from "react"
 import {
   ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
 } from "@tanstack/react-table"
 
 import {
@@ -20,21 +10,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-
-import { DataTablePagination } from "./data-table-pagination"
-import { DataTableToolbar } from "./data-table-toolbar"
-import {NavLink} from "react-router";
+} from "@/components/ui/table.tsx"
 
 
+import { DataTablePagination } from "./data-table-pagination.tsx"
+import { useReactTable, } from "@tanstack/react-table";
 
 interface DataTableProps<TData, TValue> {
+  table: ReturnType<typeof useReactTable<TData>>;
   columns: ColumnDef<TData, TValue>[]
-  data: TData[]
 }
 
 export function DataTable<TData, TValue>({
-  data,
+  table,
   columns,
   totalPages,
   totalRows,
@@ -42,9 +30,7 @@ export function DataTable<TData, TValue>({
   rowsPerPage,
   onRowsPerPage,
   onPageChange,
-  onSortingChange,
-  onTitleChange,
-  onFilterChange,
+
 }: DataTableProps<TData, TValue> & {
   totalPages: number;
   totalRows: number;
@@ -52,67 +38,11 @@ export function DataTable<TData, TValue>({
   rowsPerPage: number;
   onRowsPerPage: (page: number) => void;
   onPageChange: (page: number) => void;
-  onSortingChange: (column: string, order: "asc" | "desc") => void;
-  onTitleChange: (title: string) => void;
-  onFilterChange:(column: string, values: number[]) => void;
 }) {
 
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [sorting, setSorting] = React.useState<SortingState>([])
-
-
-
-
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters,
-    },
-    enableRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: (updater) => {
-      const newSorting = typeof updater === "function" ? updater(sorting) : updater;
-      setSorting(newSorting);
-
-      const sortBy = newSorting[0]?.id || "";
-      const sortOrder = newSorting[0]?.desc ? "desc" : "asc";
-
-      onSortingChange(sortBy, sortOrder);
-    },
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    //getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues(),
-  })
 
   return (
-    <div className="space-y-4 ">
-      <div className="bg-muted/40 border rounded-[0.5rem]">
-        <div className="flex  flex-wrap border-b bg-muted/80 pl-4">
-          <NavLink className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
-             to="/admin/panel">Add new department
-          </NavLink>
-          <NavLink className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
-             to="/admin">Add new
-          </NavLink>
-        </div>
-        <div className="p-4">
-          <DataTableToolbar table={table} onTitleChange={onTitleChange} onFilterChange={onFilterChange}/>
-        </div>
-
+    <>
         <div className="rounded-xl border-t border-b bg-card">
           <Table>
             <TableHeader>
@@ -174,8 +104,8 @@ export function DataTable<TData, TValue>({
               onRowsPerPage={onRowsPerPage}
           />
         </div>
-      </div>
+    </>
 
-    </div>
+
   )
 }

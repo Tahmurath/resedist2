@@ -1,9 +1,18 @@
-import { columns } from "./components/columns"
-import { DataTable } from "./components/data-table"
-import { useEffect, useState, useCallback  } from 'react';
+import {columns} from "./grid/columns"
+import {DataTable} from "@/components//data-table/data-table.tsx"
+import {lazy, Suspense, useCallback, useEffect, useState} from 'react';
 import {axiosInstance} from "@/axios";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
+import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
+import {Button} from "@/components/ui/button.tsx";
+import {NavLink} from "react-router";
+import {DataTableToolbar} from "@/pages/admin/departments/grid/data-table-toolbar.tsx";
+import {Deptable} from "@/pages/admin/departments/table.ts";
 
+const FormComponent = lazy(() => import("./Depform"));
+// import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
+// import {DataTablePagination} from "@/components/data-table/data-table-pagination.tsx";
+// import * as React from "react";
 
 const Departments = () => {
     const [departments, setDepartments] = useState([]);
@@ -17,6 +26,8 @@ const Departments = () => {
 
     const [parentIds, setParentIds] = useState<number[] | null>([]);
     const [departmentTypes, setDepartmentTypes] = useState<number[] | null>([]);
+
+
     
 
     const fetchDepartments = useCallback(async () => {
@@ -59,7 +70,7 @@ const Departments = () => {
         setTitle(title);
     };
     
-    const handleFilterChange = (column: string, values: number[]) => {
+    const handleFilterChange = (column: string | undefined, values: number[]) => {
         if (column === "departmentType") {
             setDepartmentTypes(values.length > 0 ? values.map(v => Number(v)) : null);
         } else if (column === "parent") {
@@ -73,11 +84,17 @@ const Departments = () => {
 
 export default function DepartmentPage() {
 
+    const [open, setOpen] = useState(false);
 
     const { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange, handleFilterChange } = Departments();
 
     const { t } = useTranslation();
 
+    const table = Deptable({
+        data:departments,
+        columns:columns,
+        onSortingChange: handleSortingChange,
+    })
     return (
         <>
             <div className="h-full flex-1 flex-col space-y-4 md:flex ">
@@ -89,20 +106,50 @@ export default function DepartmentPage() {
                         </p>
                     </div>
                 </div>
-                <DataTable
-                    data={departments}
-                    columns={columns}
-                    totalPages={totalPages}
-                    totalRows={totalRows}
-                    currentPage={currentPage}
-                    rowsPerPage={rowsPerPage}
-                    onRowsPerPage={(page: number) => setRowsPerPage(page)}
-                    onPageChange={(page: number) => setCurrentPage(page)}
-                    onSortingChange={(column: string, order: "asc" | "desc") => handleSortingChange(column,order)}
-                    onTitleChange={(title: string) => handleTitleChange(title)}
-                    onFilterChange={(column: string, values: number[]) => handleFilterChange(column,values)}
-                />
+                <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger asChild>
+                        <Button onClick={() => setOpen(true)}>افزودن رکورد جدید</Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                        <Suspense fallback={<p>در حال بارگذاری...</p>}>
+                            <FormComponent/>
+                        </Suspense>
+                    </DialogContent>
+                </Dialog>
+
+                <div className="space-y-4 ">
+                    <div className="bg-muted/40 border rounded-[0.5rem]">
+
+                        <div className="flex  flex-wrap border-b bg-muted/80 pl-4">
+                            <NavLink className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+                                     to="/admin/depform">Add new department
+                            </NavLink>
+                            <NavLink className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+                                     to="/admin">Add new
+                            </NavLink>
+                        </div>
+
+                        <div className="p-4">
+                            <DataTableToolbar table={table} onTitleChange={handleTitleChange}
+                                              onFilterChange={handleFilterChange}/>
+                        </div>
+                        <DataTable
+                            table={table}
+                            columns={columns}
+                            totalPages={totalPages}
+                            totalRows={totalRows}
+                            currentPage={currentPage}
+                            rowsPerPage={rowsPerPage}
+                            onRowsPerPage={(page: number) => setRowsPerPage(page)}
+                            onPageChange={(page: number) => setCurrentPage(page)}
+                        />
+                    </div>
+                </div>
+
+
             </div>
         </>
     )
 }
+
+

@@ -19,6 +19,7 @@ const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const Panel = lazy(() => import('./pages/admin/Panel'));
 //const Department = lazy(() => import('./pages/admin/departments/Department.tsx'));
 const Departments = lazy(() => import('./pages/admin/departments/page.tsx'));
+const Depform = lazy(() => import('./pages/admin/departments/Depform.tsx'));
 // const TaskPage = lazy(() => import('./pages/admin/tasks/page.tsx'));
 
 export const router = createBrowserRouter([
@@ -92,6 +93,14 @@ export const router = createBrowserRouter([
             element: (
                 <Suspense fallback={<>...</>}>
                   <Departments />
+                </Suspense>
+            ),
+        },
+        {
+            path: 'depform',
+            element: (
+                <Suspense fallback={<>...</>}>
+                    <Depform />
                 </Suspense>
             ),
         },

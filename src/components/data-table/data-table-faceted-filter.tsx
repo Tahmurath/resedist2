@@ -1,10 +1,10 @@
 import * as React from "react"
-import {Column, Table} from "@tanstack/react-table"
+import {Column} from "@tanstack/react-table"
 import { Check, PlusCircle } from "lucide-react"
 
-import { cn } from "@/lib/utils"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils.ts"
+import { Badge } from "@/components/ui/badge.tsx"
+import { Button } from "@/components/ui/button.tsx"
 import {
   Command,
   CommandEmpty,
@@ -13,14 +13,14 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/components/ui/command"
+} from "@/components/ui/command.tsx"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import { Separator } from "@/components/ui/separator"
-import { useEffect, useState, useCallback  } from 'react';
+} from "@/components/ui/popover.tsx"
+import { Separator } from "@/components/ui/separator.tsx"
+import { useState  } from 'react';
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
@@ -30,7 +30,7 @@ interface DataTableFacetedFilterProps<TData, TValue> {
     id: any
     icon?: React.ComponentType<{ className?: string }>
   }[]
-  onFilterChange:(column: string, values: number[]) => void
+  onFilterChange:(column: string | undefined, values: number[]) => void
   setSearchQuery: (query: string) => void;
 }
 
@@ -56,7 +56,7 @@ export function DataTableFacetedFilter<TData, TValue>({
     const option = options.find((opt) => opt.id === value);
 
     if(selectedValues.size <=0){
-      setSelectedLabels((prevLabels) => ({}))
+      setSelectedLabels(() => ({}))
     }
 
     if (selectedValues.has(value)) {
@@ -177,7 +177,7 @@ export function DataTableFacetedFilter<TData, TValue>({
                     onSelect={() => {
                       column?.setFilterValue(undefined)
                       onFilterChange(column?.id, [])
-                      setSelectedLabels((prevLabels) => ({}))
+                      setSelectedLabels(() => ({}))
                     }}
                     className="justify-center text-center"
                   >

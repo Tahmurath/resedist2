@@ -9,7 +9,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
+  // DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuSub,
@@ -18,8 +18,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-import { labels } from "../data/data"
-import { departmentSchema } from "../data/schema"
+
+import { departmentSchema } from "./schema.ts"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
@@ -49,12 +49,15 @@ export function DataTableRowActions<TData>({
         <DropdownMenuSub>
           <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
           <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup value={department.label}>
-              {labels.map((label) => (
-                <DropdownMenuRadioItem key={label.value} value={label.value}>
-                  {label.label}
-                </DropdownMenuRadioItem>
-              ))}
+            <DropdownMenuRadioGroup >
+
+                <DropdownMenuItem >
+                  {department.id}
+                </DropdownMenuItem>
+                <DropdownMenuItem >
+                  Make a copy 2
+                </DropdownMenuItem>
+
             </DropdownMenuRadioGroup>
           </DropdownMenuSubContent>
         </DropdownMenuSub>
