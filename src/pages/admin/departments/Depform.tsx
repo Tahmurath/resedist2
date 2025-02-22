@@ -156,7 +156,7 @@ function InputForm({
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>departmenttypeid</FormLabel>
-                            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={true}>
+                            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} >
                                 <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button

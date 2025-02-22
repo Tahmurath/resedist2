@@ -72,7 +72,7 @@ export const columns: ColumnDef<Department>[] = [
 
           <span className="max-w-[500px] truncate font-medium">
 
-            {(row.getValue("departmentType") as { title: string })?.title}
+            {(row.getValue("departmentType") as { title?: string } | null)?.title ?? "-"}
           </span>
         </div>
       )
@@ -91,7 +91,7 @@ export const columns: ColumnDef<Department>[] = [
         <div className="flex space-x-2">
 
           <span className="max-w-[500px] truncate font-medium">
-            {(row.getValue("parent") as { title?: string } | null)?.title ?? "بدون والد"}
+          {(row.getValue("parent") as { title?: string } | null)?.title ?? "-"}
 
           </span>
         </div>

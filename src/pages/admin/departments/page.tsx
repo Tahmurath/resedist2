@@ -106,16 +106,16 @@ export default function DepartmentPage() {
                         </p>
                     </div>
                 </div>
-                {/*<Dialog open={open} onOpenChange={setOpen}>*/}
-                {/*    <DialogTrigger asChild>*/}
-                {/*        <Button onClick={() => setOpen(true)}>افزودن رکورد جدید</Button>*/}
-                {/*    </DialogTrigger>*/}
-                {/*    <DialogContent>*/}
-                {/*        <Suspense fallback={<p>در حال بارگذاری...</p>}>*/}
-                {/*            <FormComponent/>*/}
-                {/*        </Suspense>*/}
-                {/*    </DialogContent>*/}
-                {/*</Dialog>*/}
+                <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger asChild>
+                        {/* <Button onClick={() => setOpen(true)}>افزودن رکورد جدید</Button> */}
+                    </DialogTrigger>
+                    <DialogContent>
+                        <Suspense fallback={<p>در حال بارگذاری...</p>}>
+                            <FormComponent/>
+                        </Suspense>
+                    </DialogContent>
+                </Dialog>
 
                 <div className="space-y-4 ">
                     <div className="bg-muted/40 border rounded-[0.5rem]">
@@ -124,6 +124,9 @@ export default function DepartmentPage() {
                             <NavLink className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
                                      to="/admin/depform">Add new department
                             </NavLink>
+                            <button onClick={() => setOpen(true)} className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold">
+                                Add new department
+                            </button>
                         </div>
 
                         <div className="p-4">
