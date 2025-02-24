@@ -101,9 +101,9 @@ function InputForm({
         async function fetchDepartments(searchQuery = "") {
 
             try {
-            const response = await axiosInstance.get(`/api/v1/department?title=${searchQuery}`);
-            const data = response.data;
-            setDepartments(data.data);
+                const response = await axiosInstance.get(`/api/v1/department?title=${searchQuery}`);
+                const data = response.data;
+                setDepartments(data.data);
             } catch (error) {
                 console.error('Error fetching departments:', error);
                 setDepTypes([]); // مقداردهی اولیه در صورت بروز خطا
@@ -164,7 +164,7 @@ function InputForm({
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>departmenttypeid</FormLabel>
-                            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} >
+                            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
                                 <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button

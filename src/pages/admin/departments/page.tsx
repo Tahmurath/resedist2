@@ -34,7 +34,7 @@ const useDepartments = () => {
     const [departmentTypes, setDepartmentTypes] = useState<number[] | null>([]);
 
 
-    
+
 
     const fetchDepartments = useCallback(async () => {
 
@@ -51,12 +51,12 @@ const useDepartments = () => {
                 ...(parentIds?.length ? { parent: parentIds.join(",") } : {}),
                 ...(departmentTypes?.length ? { department_type: departmentTypes.join(",") } : {}),
             });
-    
+
             const response = await axiosInstance.get(`/api/v1/department?${queryParams}`, {
                 signal: abortController.signal,
             });
             const data = response.data;
-    
+
             setDepartments(data.data);
             setTotalPages(data._pagination.total_pages);
             setTotalRows(data._pagination.total_rows);
@@ -70,13 +70,13 @@ const useDepartments = () => {
             abortController.abort(); // لغو درخواست هنگام unmount شدن کامپوننت
         };
 
-    }, [currentPage, rowsPerPage, sortColumn, sortOrder, title, parentIds, departmentTypes]); 
-    
+    }, [currentPage, rowsPerPage, sortColumn, sortOrder, title, parentIds, departmentTypes]);
+
 
     useEffect(() => {
         fetchDepartments();
     }, [fetchDepartments, parentIds, departmentTypes]);
-    
+
 
     const handleSortingChange = (column: string, order: "asc" | "desc") => {
         setSortColumn(column);
@@ -86,7 +86,7 @@ const useDepartments = () => {
     const handleTitleChange = (title: string) => {
         setTitle(title);
     };
-    
+
     const handleFilterChange = (column: string | undefined, values: number[]) => {
         if (column === "departmentType") {
             setDepartmentTypes(values.length > 0 ? values.map(v => Number(v)) : null);
