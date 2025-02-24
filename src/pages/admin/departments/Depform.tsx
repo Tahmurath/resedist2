@@ -124,7 +124,15 @@ function InputForm({
             ),
         })
 
-        const response = await axiosInstance.post(`/api/v1/department`, data);
+        try {
+            const response2 = await axiosInstance.post(`/api/v1/department`, data);
+            //const data2 = response2.data;
+
+        } catch (error) {
+            console.error('Error fetching departments:', error);
+        }
+
+        //const response = await axiosInstance.post(`/api/v1/department`, data);
 
         return <Navigate to="/admin/department" />;
     }
@@ -156,7 +164,7 @@ function InputForm({
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>departmenttypeid</FormLabel>
-                            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={true}>
+                            <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} >
                                 <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button
@@ -229,7 +237,7 @@ function InputForm({
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>parentid</FormLabel>
-                            <Popover open={isPopoverOpen2} onOpenChange={setIsPopoverOpen2} modal={true}>
+                            <Popover open={isPopoverOpen2} onOpenChange={setIsPopoverOpen2} >
                                 <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button

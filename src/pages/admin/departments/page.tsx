@@ -3,7 +3,13 @@ import {DataTable} from "@/components//data-table/data-table.tsx"
 import {lazy, Suspense, useCallback, useEffect, useState} from 'react';
 import {axiosInstance} from "@/axios";
 import {useTranslation} from "react-i18next";
-import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
+import {Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button.tsx";
 import {NavLink} from "react-router";
 import {DataTableToolbar} from "@/pages/admin/departments/grid/data-table-toolbar.tsx";
@@ -14,7 +20,7 @@ const FormComponent = lazy(() => import("./Depform"));
 // import {DataTablePagination} from "@/components/data-table/data-table-pagination.tsx";
 // import * as React from "react";
 
-const Departments = () => {
+const useDepartments = () => {
     const [departments, setDepartments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -31,6 +37,9 @@ const Departments = () => {
     
 
     const fetchDepartments = useCallback(async () => {
+
+        const abortController = new AbortController();
+
         try {
             const queryParams = new URLSearchParams({
                 expand: "true",
@@ -43,15 +52,24 @@ const Departments = () => {
                 ...(departmentTypes?.length ? { department_type: departmentTypes.join(",") } : {}),
             });
     
-            const response = await axiosInstance.get(`/api/v1/department?${queryParams}`);
+            const response = await axiosInstance.get(`/api/v1/department?${queryParams}`, {
+                signal: abortController.signal,
+            });
             const data = response.data;
     
             setDepartments(data.data);
             setTotalPages(data._pagination.total_pages);
             setTotalRows(data._pagination.total_rows);
         } catch (error) {
-            console.error("Failed to fetch departments:", error);
+            if (!abortController.signal.aborted) { // فقط اگر درخواست لغو نشده باشد، خطا را ثبت کنید
+                console.error("Failed to fetch departments:", error);
+            }
         }
+
+        return () => {
+            abortController.abort(); // لغو درخواست هنگام unmount شدن کامپوننت
+        };
+
     }, [currentPage, rowsPerPage, sortColumn, sortOrder, title, parentIds, departmentTypes]); 
     
 
@@ -66,7 +84,6 @@ const Departments = () => {
     };
 
     const handleTitleChange = (title: string) => {
-        console.log(title)
         setTitle(title);
     };
     
@@ -78,23 +95,55 @@ const Departments = () => {
         }
     };
 
-    return { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange, handleFilterChange };
+    return {
+        departments,
+        currentPage,
+        rowsPerPage,
+        totalPages,
+        totalRows,
+        setCurrentPage,
+        setRowsPerPage,
+        handleSortingChange,
+        handleTitleChange,
+        handleFilterChange,
+    };
 }
 
-
-export default function DepartmentPage() {
+const DepartmentPage = () => {
 
     const [open, setOpen] = useState(false);
-
-    const { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange, handleFilterChange } = Departments();
-
     const { t } = useTranslation();
+    const [loading, setLoading] = useState(true);
+
+    const {
+        departments,
+        currentPage,
+        rowsPerPage,
+        totalPages,
+        totalRows,
+        setCurrentPage,
+        setRowsPerPage,
+        handleSortingChange,
+        handleTitleChange,
+        handleFilterChange,
+    } = useDepartments();
+
+
 
     const table = Deptable({
         data:departments,
         columns:columns,
         onSortingChange: handleSortingChange,
     })
+
+    useEffect(() => {
+        setLoading(false);
+    }, []);
+
+    if (loading) {
+        return <p>Loading...</p>; // نمایش پیام لودینگ
+    }
+
     return (
         <>
             <div className="h-full flex-1 flex-col space-y-4 md:flex ">
@@ -106,16 +155,25 @@ export default function DepartmentPage() {
                         </p>
                     </div>
                 </div>
-                {/*<Dialog open={open} onOpenChange={setOpen}>*/}
-                {/*    <DialogTrigger asChild>*/}
-                {/*        <Button onClick={() => setOpen(true)}>افزودن رکورد جدید</Button>*/}
-                {/*    </DialogTrigger>*/}
-                {/*    <DialogContent>*/}
-                {/*        <Suspense fallback={<p>در حال بارگذاری...</p>}>*/}
-                {/*            <FormComponent/>*/}
-                {/*        </Suspense>*/}
-                {/*    </DialogContent>*/}
-                {/*</Dialog>*/}
+                <Dialog open={open} onOpenChange={setOpen} modal={true}>
+                    <DialogTrigger asChild>
+                        {/* <Button onClick={() => setOpen(true)}>افزودن رکورد جدید</Button> */}
+                    </DialogTrigger>
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Add new department</DialogTitle>
+                            <DialogDescription>
+                                Add new department Add new department
+                            </DialogDescription>
+                        </DialogHeader>
+                        <Suspense fallback={<p>در حال بارگذاری...</p>}>
+                            <FormComponent/>
+                        </Suspense>
+                        <DialogFooter>
+                            <Button variant={"outline"} onClick={() => setOpen(false)}>Cancel</Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
 
                 <div className="space-y-4 ">
                     <div className="bg-muted/40 border rounded-[0.5rem]">
@@ -124,6 +182,10 @@ export default function DepartmentPage() {
                             <NavLink className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
                                      to="/admin/depform">Add new department
                             </NavLink>
+                            <button onClick={() => setOpen(true)}
+                                    className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold">
+                                Add new department
+                            </button>
                         </div>
 
                         <div className="p-4">
@@ -148,5 +210,7 @@ export default function DepartmentPage() {
         </>
     )
 }
+
+export default DepartmentPage;
 
 
