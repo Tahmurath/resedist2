@@ -3,7 +3,13 @@ import {DataTable} from "@/components//data-table/data-table.tsx"
 import {lazy, Suspense, useCallback, useEffect, useState} from 'react';
 import {axiosInstance} from "@/axios";
 import {useTranslation} from "react-i18next";
-import {Dialog, DialogContent, DialogTrigger} from "@/components/ui/dialog";
+import {Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,} from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button.tsx";
 import {NavLink} from "react-router";
 import {DataTableToolbar} from "@/pages/admin/departments/grid/data-table-toolbar.tsx";
@@ -14,7 +20,7 @@ const FormComponent = lazy(() => import("./Depform"));
 // import {DataTablePagination} from "@/components/data-table/data-table-pagination.tsx";
 // import * as React from "react";
 
-const Departments = () => {
+const useDepartments = () => {
     const [departments, setDepartments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5)
@@ -78,7 +84,8 @@ const Departments = () => {
         }
     };
 
-    return { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange, handleFilterChange };
+    return { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage,
+         handleSortingChange, handleTitleChange, handleFilterChange };
 }
 
 
@@ -86,7 +93,8 @@ export default function DepartmentPage() {
 
     const [open, setOpen] = useState(false);
 
-    const { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange, handleTitleChange, handleFilterChange } = Departments();
+    const { departments, currentPage, rowsPerPage, totalPages, totalRows, setCurrentPage, setRowsPerPage, handleSortingChange,
+         handleTitleChange, handleFilterChange } = useDepartments();
 
     const { t } = useTranslation();
 
@@ -111,9 +119,18 @@ export default function DepartmentPage() {
                         {/* <Button onClick={() => setOpen(true)}>افزودن رکورد جدید</Button> */}
                     </DialogTrigger>
                     <DialogContent>
+                    <DialogHeader>
+                    <DialogTitle>Edit profile</DialogTitle>
+                    <DialogDescription>
+                        Make changes to your profile here. Click save when you're done.
+                    </DialogDescription>
+                    </DialogHeader>
                         <Suspense fallback={<p>در حال بارگذاری...</p>}>
                             <FormComponent/>
                         </Suspense>
+                        <DialogFooter>
+                        <Button type="submit">Save changes</Button>
+                        </DialogFooter>
                     </DialogContent>
                 </Dialog>
 

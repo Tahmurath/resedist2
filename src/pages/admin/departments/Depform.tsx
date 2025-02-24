@@ -308,7 +308,6 @@ export default function Home() {
 
     return (
         <div className="flex-1 lg:max-w-2xl">
-
             <h3 className=" text-center text-2xl/9 font-bold tracking-tight text-gray-900">
                 Create a new Department
             </h3>
