@@ -25,7 +25,7 @@ import {cn} from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react"
 import {axiosInstance} from "@/axios";
 import {Navigate} from "react-router";
-
+import { Loader2 } from 'lucide-react';
 
 interface DepType {
     id: number;
@@ -113,8 +113,14 @@ function InputForm({
         fetchDepartments(query2);
     }, [query2]);
 
+    const [isLoading, setIsLoading] = useState(false);
+
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         //alert(JSON.stringify(data, null, 2))
+
+        //e.preventDefault();
+        setIsLoading(true);
+
         toast({
             title: "You submitted the following values:",
             description: (
@@ -130,6 +136,8 @@ function InputForm({
 
         } catch (error) {
             console.error('Error fetching departments:', error);
+        } finally {
+            setIsLoading(false);
         }
 
         //const response = await axiosInstance.post(`/api/v1/department`, data);
@@ -138,6 +146,7 @@ function InputForm({
     }
 
     return (
+        <div>
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
@@ -306,9 +315,12 @@ function InputForm({
                 />
 
 
-                <Button type="submit">Submit</Button>
+                <Button type="submit" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="animate-spin" /> : 'Submit'}
+                </Button>
             </form>
         </Form>
+        </div>
     )
 }
 
