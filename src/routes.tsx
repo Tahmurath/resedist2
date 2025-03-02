@@ -20,6 +20,7 @@ const Panel = lazy(() => import('./pages/admin/Panel'));
 //const Department = lazy(() => import('./pages/admin/departments/Department.tsx'));
 const Departments = lazy(() => import('./pages/admin/departments/page.tsx'));
 const Depform = lazy(() => import('./pages/admin/departments/Depform.tsx'));
+const ViewItem = lazy(() => import('./pages/admin/departments/Depview.tsx'));
 // const TaskPage = lazy(() => import('./pages/admin/tasks/page.tsx'));
 
 export const router = createBrowserRouter([
@@ -101,6 +102,14 @@ export const router = createBrowserRouter([
             element: (
                 <Suspense fallback={<>...</>}>
                     <Depform />
+                </Suspense>
+            ),
+        },
+        {
+            path: 'department/:id',
+            element: (
+                <Suspense fallback={<>...</>}>
+                    <ViewItem />
                 </Suspense>
             ),
         },

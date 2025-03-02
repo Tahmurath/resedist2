@@ -24,7 +24,7 @@ import {
 import {cn} from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react"
 import {axiosInstance} from "@/axios";
-import {Navigate} from "react-router";
+import {useNavigate} from "react-router";
 import { Loader2 } from 'lucide-react';
 
 interface DepType {
@@ -54,15 +54,16 @@ const FormSchema = z.object({
 });
 
 
-function InputForm({
-                       title = "",
-                       departmenttypeid,
-                       parentid,
-                   }: {
-    title?: string; // می‌تواند خالی باشد
-    departmenttypeid?: number; // می‌تواند خالی باشد
-    parentid?: number; // می‌تواند خالی باشد
-}) {
+
+const InputForm = ({
+                   title = "",
+                   departmenttypeid,
+                   parentid,
+               }: {
+    title?: string;
+    departmenttypeid?: number;
+    parentid?: number;
+}) => {
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -79,6 +80,7 @@ function InputForm({
     const [departments, setDepartments] = useState<Department[]>([]);
     const [query1, setQuery1] = useState("");
     const [query2, setQuery2] = useState("");
+    const navigate = useNavigate();
 
 
     useEffect(() => {
@@ -106,7 +108,7 @@ function InputForm({
                 setDepartments(data.data);
             } catch (error) {
                 console.error('Error fetching departments:', error);
-                setDepTypes([]); // مقداردهی اولیه در صورت بروز خطا
+                setDepartments([]); // مقداردهی اولیه در صورت بروز خطا
             }
         }
 
@@ -121,18 +123,24 @@ function InputForm({
         //e.preventDefault();
         setIsLoading(true);
 
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-            </pre>
-            ),
-        })
+
 
         try {
             const response2 = await axiosInstance.post(`/api/v1/department`, data);
+            const newData = response.data.data;
+            //console.info(response2.data)
             //const data2 = response2.data;
+
+            toast({
+                title: "You submitted the following values:",
+                description: (
+                    <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+              <code className="text-white">{JSON.stringify(response2.data.data, null, 2)}</code>
+            </pre>
+                ),
+            })
+
+            //navigate(`/admin/department/${newData.id}`, { state: newData });
 
         } catch (error) {
             console.error('Error fetching departments:', error);
@@ -140,9 +148,6 @@ function InputForm({
             setIsLoading(false);
         }
 
-        //const response = await axiosInstance.post(`/api/v1/department`, data);
-
-        return <Navigate to="/admin/department" />;
     }
 
     return (
@@ -207,7 +212,7 @@ function InputForm({
                                                 {depTypes && depTypes.length > 0 ? (
                                                     depTypes.map((departmenttypeid) => (
                                                         <CommandItem
-                                                            value={departmenttypeid.title}
+                                                            value={String(departmenttypeid.id)}
                                                             key={departmenttypeid.id}
                                                             onSelect={() => {
                                                                 form.setValue("departmenttypeid", departmenttypeid.id);
@@ -280,7 +285,7 @@ function InputForm({
                                                 {departments && departments.length > 0 ? (
                                                     departments.map((parentid) => (
                                                         <CommandItem
-                                                            value={parentid.title}
+                                                            value={String(parentid.id)}
                                                             key={parentid.id}
                                                             onSelect={() => {
                                                                 form.setValue("parentid", parentid.id);
@@ -324,19 +329,21 @@ function InputForm({
     )
 }
 
-export default function Home() {
+export default InputForm
 
-    return (
-        <div className="flex-1 lg:max-w-2xl">
-
-            <h3 className=" text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-                Create a new Department
-            </h3>
-
-            <div>
-                <InputForm title={""} departmenttypeid={undefined} parentid={undefined}></InputForm>
-            </div>
-
-        </div>
-    );
-}
+// const About22 = () => {
+//
+//     return (
+//         <div className="flex-1 lg:max-w-2xl">
+//
+//             <h3 className=" text-center text-2xl/9 font-bold tracking-tight text-gray-900">
+//                 Create a new Department
+//             </h3>
+//
+//             <div>
+//                 <InputForm title={""} departmenttypeid={undefined} parentid={undefined}></InputForm>
+//             </div>
+//
+//         </div>
+//     );
+// }
