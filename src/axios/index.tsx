@@ -4,7 +4,7 @@ import { QueryClient } from "@tanstack/react-query";
 
 const axiosInstance = axios.create({
   baseURL: "http://localhost:4000",
-  timeout: 1000,
+  timeout: 2000,
   headers: {
     Accept: "application/json",
     //"Access-Control-Allow-Origin": "*",
