@@ -46,6 +46,8 @@ const useDepartments = () => {
   const [parentIds, setParentIds] = useState<number[] | null>([]);
   const [departmentTypes, setDepartmentTypes] = useState<number[] | null>([]);
   const [displayedDepartments, setDisplayedDepartments] = useState<any[]>([]);
+  const [totalPages, setTotalPages] = useState(1); // به state منتقل شد
+  const [totalRows, setTotalRows] = useState(0); // به state منتقل شد
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
   const debouncedTitle = useDebounce(title, 500);
@@ -85,18 +87,16 @@ const useDepartments = () => {
 
   const departments = data?.data || [];
 
-  const totalPages = data?._pagination?.total_pages || 1;
-  const totalRows = data?._pagination?.total_rows || 0;
-
   useEffect(() => {
-    // فقط وقتی داده جدید داریم یا درخواست تموم شده آپدیت کن
     if (!isFetching) {
       setDisplayedDepartments(departments);
+      setTotalPages(data?._pagination?.total_pages || 1); // فقط وقتی داده جدیده آپدیت می‌شه
+      setTotalRows(data?._pagination?.total_rows || 0); // فقط وقتی داده جدیده آپدیت می‌شه
     }
     if (isInitialLoad && !isLoading) {
       setIsInitialLoad(false);
     }
-  }, [departments, isFetching, isLoading, isInitialLoad]);
+  }, [data, departments, isFetching, isLoading, isInitialLoad]);
 
   const refreshDepartments = () => {
     queryClient.invalidateQueries({ queryKey: ["departments"] });
@@ -204,16 +204,14 @@ const DepartmentPage = () => {
             Here's a list of your {t("site.departments")} for this month!
           </p>
         </div>
-        <div className="space-x-2">
+        {/* <div className="space-x-2">
           <Button onClick={refreshDepartments}>رفرش داده‌ها</Button>
           <Button onClick={clearDepartmentsCache}>پاک کردن کش دپارتمان‌ها</Button>
           <Button onClick={clearAllCache}>پاک کردن همه کش‌ها</Button>
-        </div>
+        </div> */}
       </div>
       <Dialog open={open} onOpenChange={setOpen} modal={true}>
-        <DialogTrigger asChild>
-          <Button onClick={() => setOpen(true)}>افزودن رکورد جدید</Button>
-        </DialogTrigger>
+        
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add new department</DialogTitle>
@@ -244,6 +242,12 @@ const DepartmentPage = () => {
               className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
             >
               Add new department
+            </button>
+            <button
+              onClick={refreshDepartments}
+              className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+            >
+              Refresh
             </button>
           </div>
           <div className="p-4">

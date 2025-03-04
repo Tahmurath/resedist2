@@ -41,17 +41,18 @@ interface Department {
 //const token = isExpiredJwt()
 
 const FormSchema = z.object({
-    title: z.string().min(3, {
-        message: "Title must be at least 3 characters.",
-    }),
-    departmenttypeid: z.preprocess((value) => Number(value), z.number({
-        message: "DepartmentTypeID must be a number.",
-    })),
-    parentid: z.preprocess((value) => Number(value), z.number({
-        message: "ParentID must be a number.",
-    })),
-
+    title: z.string().min(3, { message: "Title must be at least 3 characters." }),
+    departmenttypeid: z.preprocess(
+        (value) => (value ? Number(value) : undefined),
+        z.number({ required_error: "DepartmentTypeID is required." }).optional()
+    ),
+    parentid: z.preprocess(
+        (value) => (value ? Number(value) : undefined),
+        z.number({ required_error: "ParentID is required." }).optional()
+    ),
 });
+
+
 
 
 
@@ -70,11 +71,11 @@ const InputForm = ({
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            title: title,
-            departmenttypeid: departmenttypeid,
-            parentid: parentid,
+            title: title || "",
+            departmenttypeid: departmenttypeid ?? undefined,
+            parentid: parentid ?? undefined,
         },
-    })
+    });
 
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [isPopoverOpen2, setIsPopoverOpen2] = useState(false);
@@ -87,75 +88,65 @@ const InputForm = ({
 
 
     useEffect(() => {
-        async function fetchDepTypes(searchQuery = "") {
-            try {
-                //const response = await fetch(`http://localhost:8080/api/v1/department-type?query=${searchQuery}`);
-                const response = await axiosInstance.get(`/api/v1/department-type?title=${searchQuery}`);
-                const data = response.data;
-                setDepTypes(data.data);
-
-            } catch (error) {
-                console.error('Error fetching depTypes:', error);
-                setDepTypes([]); // مقداردهی اولیه در صورت بروز خطا
-            }
+    async function fetchDepTypes(searchQuery = "") {
+        try {
+            const response = await axiosInstance.get(`/api/v1/department-type?title=${searchQuery}`);
+            setDepTypes(response.data.data || []);
+        } catch (error) {
+            console.error('Error fetching depTypes:', error);
+            setDepTypes([]);
+            toast({
+                title: "خطا",
+                description: "دریافت نوع دپارتمان‌ها با مشکل مواجه شد.",
+                variant: "destructive",
+            });
         }
+    }
+    fetchDepTypes(query1);
+}, [query1]);
 
-        fetchDepTypes(query1);
-    }, [query1]);
-
-    useEffect(() => {
-        async function fetchDepartments(searchQuery = "") {
-
-            try {
-                const response = await axiosInstance.get(`/api/v1/department?title=${searchQuery}`);
-                const data = response.data;
-                setDepartments(data.data);
-            } catch (error) {
-                console.error('Error fetching departments:', error);
-                setDepartments([]); // مقداردهی اولیه در صورت بروز خطا
-            }
+useEffect(() => {
+    async function fetchDepartments(searchQuery = "") {
+        try {
+            const response = await axiosInstance.get(`/api/v1/department?title=${searchQuery}`);
+            setDepartments(response.data.data || []);
+        } catch (error) {
+            console.error('Error fetching depTypes:', error);
+            setDepartments([]);
+            toast({
+                title: "خطا",
+                description: "دریافت نوع دپارتمان‌ها با مشکل مواجه شد.",
+                variant: "destructive",
+            });
         }
+    }
+    fetchDepartments(query2);
+}, [query2]);
 
-        fetchDepartments(query2);
-    }, [query2]);
+   
 
     const [isLoading, setIsLoading] = useState(false);
 
     async function onSubmit(data: z.infer<typeof FormSchema>) {
-        //alert(JSON.stringify(data, null, 2))
-
-        //e.preventDefault();
         setIsLoading(true);
-
-
-
         try {
-            const response2 = await axiosInstance.post(`/api/v1/department`, data);
-            const newData = response2.data.data;
-            setRecord(newData);
-            if (onSuccess) {
-                onSuccess(); // فراخوانی callback بعد از موفقیت
-            }
-            //console.info(response2.data)
-            //const data2 = response2.data;
-
+            const response = await axiosInstance.post(`/api/v1/department`, data);
+            setRecord(response.data.data);
             toast({
-                title: "You submitted the following values:",
-                description: (
-                    <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">{JSON.stringify(response2.data.data, null, 2)}</code>
-            </pre>
-                ),
-            })
-
-            //navigate(`/admin/department/${newData.id}`, { state: newData });
-
+                title: "موفقیت",
+                description: "دپارتمان با موفقیت ثبت شد.",
+            });
+            if (onSuccess) onSuccess();
         } catch (error) {
-            console.error('Error fetching departments:', error);
+            console.error('Error submitting form:', error);
+            toast({
+                title: "خطا",
+                description: "ثبت دپارتمان با مشکل مواجه شد.",
+                variant: "destructive",
+            });
         } finally {
             setIsLoading(false);
         }
-
     }
 
     return (
@@ -345,19 +336,4 @@ const InputForm = ({
 
 export default InputForm
 
-// const About22 = () => {
-//
-//     return (
-//         <div className="flex-1 lg:max-w-2xl">
-//
-//             <h3 className=" text-center text-2xl/9 font-bold tracking-tight text-gray-900">
-//                 Create a new Department
-//             </h3>
-//
-//             <div>
-//                 <InputForm title={""} departmenttypeid={undefined} parentid={undefined}></InputForm>
-//             </div>
-//
-//         </div>
-//     );
-// }
+
