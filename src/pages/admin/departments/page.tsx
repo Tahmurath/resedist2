@@ -1,81 +1,118 @@
-import {columns} from "./grid/columns"
-import {DataTable} from "@/components//data-table/data-table.tsx"
-import {lazy, Suspense, useCallback, useEffect, useState} from 'react';
-import {axiosInstance} from "@/axios";
-import {useTranslation} from "react-i18next";
-import {Dialog,
+import { columns } from "./grid/columns";
+import { DataTable } from "@/components/data-table/data-table.tsx";
+import { lazy, Suspense, useState, useEffect } from "react";
+import { axiosInstance } from "@/axios";
+import { useTranslation } from "react-i18next";
+import {
+    Dialog,
     DialogContent,
     DialogDescription,
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,} from "@/components/ui/dialog";
-import {Button} from "@/components/ui/button.tsx";
-import {NavLink} from "react-router";
-import {DataTableToolbar} from "@/pages/admin/departments/grid/data-table-toolbar.tsx";
-import {Deptable} from "@/pages/admin/departments/table.ts";
-import { useQuery } from '@tanstack/react-query';
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button.tsx";
+import { NavLink } from "react-router";
+import { DataTableToolbar } from "@/pages/admin/departments/grid/data-table-toolbar.tsx";
+import { Deptable } from "@/pages/admin/departments/table.ts";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
+const useDebounce = (value: string | null, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedValue(value);
+        }, delay);
+
+        return () => {
+            clearTimeout(timer);
+        };
+    }, [value, delay]);
+
+    return debouncedValue;
+};
 
 const FormComponent = lazy(() => import("./Depform"));
-// import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
-// import {DataTablePagination} from "@/components/data-table/data-table-pagination.tsx";
-// import * as React from "react";
 
-const getDepartments = () => {
-    const [departments, setDepartments] = useState([]);
+const useDepartments = () => {
+    const queryClient = useQueryClient();
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalRows, setTotalRows] = useState(0);
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
     const [title, setTitle] = useState<string | null>(null);
     const [parentIds, setParentIds] = useState<number[] | null>([]);
     const [departmentTypes, setDepartmentTypes] = useState<number[] | null>([]);
+    const [displayedDepartments, setDisplayedDepartments] = useState<any[]>([]);
 
-    const fetchDepartments = useCallback(() => {
+    const debouncedTitle = useDebounce(title, 500);
 
+    const fetchDepartments = async () => {
+        const queryParams = new URLSearchParams({
+            expand: "true",
+            page: currentPage.toString(),
+            page_size: rowsPerPage.toString(),
+            ...(sortColumn && { sort: sortColumn }),
+            ...(sortOrder && { order: sortOrder }),
+            ...(debouncedTitle && debouncedTitle.length >= 2 && { title: debouncedTitle }),
+            ...(parentIds?.length && { parent: parentIds.join(",") }),
+            ...(departmentTypes?.length && { department_type: departmentTypes.join(",") }),
+        });
 
-        const fetchData = async () => {
-            try {
-                const queryParams = new URLSearchParams({
-                    expand: "true",
-                    page: currentPage.toString(),
-                    page_size: rowsPerPage.toString(),
-                    ...(sortColumn && { sort: sortColumn }),
-                    ...(sortOrder && { order: sortOrder }),
-                    ...(title && title.length >= 2 && { title: title }),
-                    ...(parentIds?.length ? { parent: parentIds.join(",") } : {}),
-                    ...(departmentTypes?.length ? { department_type: departmentTypes.join(",") } : {}),
-                });
+        const response = await axiosInstance.get(`/api/v1/department?${queryParams}`);
+        return response.data;
+    };
 
-                const response = await axiosInstance.get(`/api/v1/department?${queryParams}`);
-                const data = response.data;
+    const { data, isLoading, isFetching, error } = useQuery({
+        queryKey: [
+            "departments",
+            currentPage,
+            rowsPerPage,
+            sortColumn,
+            sortOrder,
+            debouncedTitle,
+            parentIds,
+            departmentTypes,
+        ],
+        queryFn: fetchDepartments,
+        keepPreviousData: true,
+        staleTime: 5 * 60 * 1000,
+        cacheTime: 10 * 60 * 1000,
+    });
 
-                setDepartments(data.data);
-                setTotalPages(data._pagination.total_pages);
-                setTotalRows(data._pagination.total_rows);
-            } catch (error) {
-
-            }
-        };
-
-        fetchData();
-
-
-    }, [currentPage, rowsPerPage, sortColumn, sortOrder, title, parentIds, departmentTypes]);
+    const departments = data?.data || [];
+    const totalPages = data?._pagination?.total_pages || 1;
+    const totalRows = data?._pagination?.total_rows || 0;
 
     useEffect(() => {
-        return fetchDepartments();
-    }, [fetchDepartments]);
+        if (departments.length || (!isFetching && !isLoading)) {
+            setDisplayedDepartments(departments);
+        }
+    }, [departments, isFetching, isLoading]);
+
+    const refreshDepartments = () => {
+        queryClient.invalidateQueries({ queryKey: ["departments"] });
+    };
+
+    const clearDepartmentsCache = () => {
+        queryClient.removeQueries({ queryKey: ["departments"] });
+    };
+
+    const clearAllCache = () => {
+        queryClient.clear();
+    };
 
     const handleSortingChange = (column: string, order: "asc" | "desc") => {
         setSortColumn(column);
         setSortOrder(order);
+        //refreshDepartments();
     };
 
     const handleTitleChange = (title: string) => {
         setTitle(title);
+        setCurrentPage(1);
     };
 
     const handleFilterChange = (column: string | undefined, values: number[]) => {
@@ -84,10 +121,12 @@ const getDepartments = () => {
         } else if (column === "parent") {
             setParentIds(values.length > 0 ? values.map((v) => Number(v)) : null);
         }
+        setCurrentPage(1);
+        //refreshDepartments();
     };
 
     return {
-        departments,
+        departments: displayedDepartments,
         currentPage,
         rowsPerPage,
         totalPages,
@@ -97,14 +136,18 @@ const getDepartments = () => {
         handleSortingChange,
         handleTitleChange,
         handleFilterChange,
+        refreshDepartments,
+        clearDepartmentsCache,
+        clearAllCache,
+        isLoading,
+        isFetching,
+        error,
     };
 };
 
 const DepartmentPage = () => {
-
     const [open, setOpen] = useState(false);
     const { t } = useTranslation();
-    const [loading, setLoading] = useState(true);
 
     const {
         departments,
@@ -117,72 +160,98 @@ const DepartmentPage = () => {
         handleSortingChange,
         handleTitleChange,
         handleFilterChange,
-    } = getDepartments();
-
-
+        refreshDepartments,
+        clearDepartmentsCache,
+        clearAllCache,
+        isLoading,
+        isFetching,
+        error,
+    } = useDepartments();
 
     const table = Deptable({
-        data:departments,
-        columns:columns,
+        data: departments,
+        columns: columns,
         onSortingChange: handleSortingChange,
-    })
+    });
 
-    useEffect(() => {
-        setLoading(false);
-    }, []);
+    // Callback برای وقتی فرم با موفقیت ارسال شد
+    const handleFormSuccess = () => {
+        refreshDepartments(); // رفرش جدول
+        //setOpen(false); // بستن دایالوگ
+    };
 
-    if (loading) {
-        return <p>Loading...</p>; // نمایش پیام لودینگ
+    if (isLoading && !departments.length) {
+        return <p>در حال بارگذاری...</p>;
+    }
+
+    if (error) {
+        return <p>خطا: {(error as Error).message}</p>;
     }
 
     return (
-        <>
-            <div className="h-full flex-1 flex-col space-y-4 md:flex ">
-                <div className="flex items-center justify-between space-y-2">
-                    <div>
-                        <h2 className="text-2xl font-bold tracking-tight">{t("site.departments")}</h2>
-                        <p className="text-muted-foreground">
-                            Here&apos;s a list of your {t("site.departments")} for this month!
-                        </p>
-                    </div>
+        <div className="h-full flex-1 flex-col space-y-4 md:flex">
+            <div className="flex items-center justify-between space-y-2">
+                <div>
+                    <h2 className="text-2xl font-bold tracking-tight">{t("site.departments")}</h2>
+                    <p className="text-muted-foreground">
+                        Here's a list of your {t("site.departments")} for this month!
+                    </p>
                 </div>
-                <Dialog open={open} onOpenChange={setOpen} modal={true}>
-                    <DialogTrigger asChild>
-                        {/* <Button onClick={() => setOpen(true)}>افزودن رکورد جدید</Button> */}
-                    </DialogTrigger>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Add new department</DialogTitle>
-                            <DialogDescription>
-                                Add new department Add new department
-                            </DialogDescription>
-                        </DialogHeader>
-                        <Suspense fallback={<p>در حال بارگذاری...</p>}>
-                            <FormComponent/>
-                        </Suspense>
-                        <DialogFooter>
-                            <Button variant={"outline"} onClick={() => setOpen(false)}>Cancel</Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
+                <div className="space-x-2">
+                    <Button onClick={refreshDepartments}>رفرش داده‌ها</Button>
+                    <Button onClick={clearDepartmentsCache}>پاک کردن کش دپارتمان‌ها</Button>
+                    <Button onClick={clearAllCache}>پاک کردن همه کش‌ها</Button>
+                </div>
+            </div>
+            <Dialog open={open} onOpenChange={setOpen} modal={true}>
+                <DialogTrigger asChild>
+                    <Button onClick={() => setOpen(true)}>افزودن رکورد جدید</Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Add new department</DialogTitle>
+                        <DialogDescription>Add new department</DialogDescription>
+                    </DialogHeader>
+                    <Suspense fallback={<p>در حال بارگذاری...</p>}>
+                        <FormComponent onSuccess={handleFormSuccess} /> {/* پاس دادن callback */}
+                    </Suspense>
+                    <DialogFooter>
+                        <Button variant={"outline"} onClick={() => setOpen(false)}>
+                            Cancel
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
 
-                <div className="space-y-4 ">
-                    <div className="bg-muted/40 border rounded-[0.5rem]">
-
-                        <div className="flex  flex-wrap border-b bg-muted/80 pl-4">
-                            <NavLink className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
-                                     to="/admin/depform">Add new department
-                            </NavLink>
-                            <button onClick={() => setOpen(true)}
-                                    className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold">
-                                Add new department
-                            </button>
-                        </div>
-
-                        <div className="p-4">
-                            <DataTableToolbar table={table} onTitleChange={handleTitleChange}
-                                              onFilterChange={handleFilterChange}/>
-                        </div>
+            <div className="space-y-4">
+                <div className="bg-muted/40 border rounded-[0.5rem]">
+                    <div className="flex flex-wrap border-b bg-muted/80 pl-4">
+                        <NavLink
+                            className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+                            to="/admin/depform"
+                        >
+                            Add new department
+                        </NavLink>
+                        <button
+                            onClick={() => setOpen(true)}
+                            className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+                        >
+                            Add new department
+                        </button>
+                    </div>
+                    <div className="p-4">
+                        <DataTableToolbar
+                            table={table}
+                            onTitleChange={handleTitleChange}
+                            onFilterChange={handleFilterChange}
+                        />
+                    </div>
+                    <div className="relative">
+                        {isFetching && departments.length ? (
+                            <div className="absolute top-0 left-0 w-full bg-gray-200 bg-opacity-50 text-center py-1">
+                                در حال به‌روزرسانی...
+                            </div>
+                        ) : null}
                         <DataTable
                             table={table}
                             columns={columns}
@@ -195,13 +264,9 @@ const DepartmentPage = () => {
                         />
                     </div>
                 </div>
-
-
             </div>
-        </>
-    )
-}
+        </div>
+    );
+};
 
 export default DepartmentPage;
-
-

@@ -59,10 +59,12 @@ const InputForm = ({
                    title = "",
                    departmenttypeid,
                    parentid,
+                   onSuccess,
                }: {
     title?: string;
     departmenttypeid?: number;
     parentid?: number;
+    onSuccess?: () => void | undefined;
 }) => {
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -131,6 +133,9 @@ const InputForm = ({
             const response2 = await axiosInstance.post(`/api/v1/department`, data);
             const newData = response2.data.data;
             setRecord(newData);
+            if (onSuccess) {
+                onSuccess(); // فراخوانی callback بعد از موفقیت
+            }
             //console.info(response2.data)
             //const data2 = response2.data;
 
