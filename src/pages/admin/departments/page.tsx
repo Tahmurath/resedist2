@@ -14,69 +14,60 @@ import {Button} from "@/components/ui/button.tsx";
 import {NavLink} from "react-router";
 import {DataTableToolbar} from "@/pages/admin/departments/grid/data-table-toolbar.tsx";
 import {Deptable} from "@/pages/admin/departments/table.ts";
+import { useQuery } from '@tanstack/react-query';
 
 const FormComponent = lazy(() => import("./Depform"));
 // import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table.tsx";
 // import {DataTablePagination} from "@/components/data-table/data-table-pagination.tsx";
 // import * as React from "react";
 
-const useDepartments = () => {
+const getDepartments = () => {
     const [departments, setDepartments] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(5)
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const [totalPages, setTotalPages] = useState(1);
     const [totalRows, setTotalRows] = useState(0);
     const [sortColumn, setSortColumn] = useState<string | null>(null);
     const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
     const [title, setTitle] = useState<string | null>(null);
-
     const [parentIds, setParentIds] = useState<number[] | null>([]);
     const [departmentTypes, setDepartmentTypes] = useState<number[] | null>([]);
 
+    const fetchDepartments = useCallback(() => {
 
 
+        const fetchData = async () => {
+            try {
+                const queryParams = new URLSearchParams({
+                    expand: "true",
+                    page: currentPage.toString(),
+                    page_size: rowsPerPage.toString(),
+                    ...(sortColumn && { sort: sortColumn }),
+                    ...(sortOrder && { order: sortOrder }),
+                    ...(title && title.length >= 2 && { title: title }),
+                    ...(parentIds?.length ? { parent: parentIds.join(",") } : {}),
+                    ...(departmentTypes?.length ? { department_type: departmentTypes.join(",") } : {}),
+                });
 
-    const fetchDepartments = useCallback(async () => {
+                const response = await axiosInstance.get(`/api/v1/department?${queryParams}`);
+                const data = response.data;
 
-        const abortController = new AbortController();
+                setDepartments(data.data);
+                setTotalPages(data._pagination.total_pages);
+                setTotalRows(data._pagination.total_rows);
+            } catch (error) {
 
-        try {
-            const queryParams = new URLSearchParams({
-                expand: "true",
-                page: currentPage.toString(),
-                page_size: rowsPerPage.toString(),
-                ...(sortColumn && { sort: sortColumn }),
-                ...(sortOrder && { order: sortOrder }),
-                ...(title && title.length >= 2 && { title: title }),
-                ...(parentIds?.length ? { parent: parentIds.join(",") } : {}),
-                ...(departmentTypes?.length ? { department_type: departmentTypes.join(",") } : {}),
-            });
-
-            const response = await axiosInstance.get(`/api/v1/department?${queryParams}`, {
-                signal: abortController.signal,
-            });
-            const data = response.data;
-
-            setDepartments(data.data);
-            setTotalPages(data._pagination.total_pages);
-            setTotalRows(data._pagination.total_rows);
-        } catch (error) {
-            if (!abortController.signal.aborted) { // فقط اگر درخواست لغو نشده باشد، خطا را ثبت کنید
-                console.error("Failed to fetch departments:", error);
             }
-        }
-
-        return () => {
-            abortController.abort(); // لغو درخواست هنگام unmount شدن کامپوننت
         };
+
+        fetchData();
+
 
     }, [currentPage, rowsPerPage, sortColumn, sortOrder, title, parentIds, departmentTypes]);
 
-
     useEffect(() => {
-        fetchDepartments();
-    }, [fetchDepartments, parentIds, departmentTypes]);
-
+        return fetchDepartments();
+    }, [fetchDepartments]);
 
     const handleSortingChange = (column: string, order: "asc" | "desc") => {
         setSortColumn(column);
@@ -89,9 +80,9 @@ const useDepartments = () => {
 
     const handleFilterChange = (column: string | undefined, values: number[]) => {
         if (column === "departmentType") {
-            setDepartmentTypes(values.length > 0 ? values.map(v => Number(v)) : null);
+            setDepartmentTypes(values.length > 0 ? values.map((v) => Number(v)) : null);
         } else if (column === "parent") {
-            setParentIds(values.length > 0 ? values.map(v => Number(v)) : null);
+            setParentIds(values.length > 0 ? values.map((v) => Number(v)) : null);
         }
     };
 
@@ -107,7 +98,7 @@ const useDepartments = () => {
         handleTitleChange,
         handleFilterChange,
     };
-}
+};
 
 const DepartmentPage = () => {
 
@@ -126,7 +117,7 @@ const DepartmentPage = () => {
         handleSortingChange,
         handleTitleChange,
         handleFilterChange,
-    } = useDepartments();
+    } = getDepartments();
 
 
 
