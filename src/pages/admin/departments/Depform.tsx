@@ -212,7 +212,7 @@ function InputForm({
                                                 {depTypes && depTypes.length > 0 ? (
                                                     depTypes.map((departmenttypeid) => (
                                                         <CommandItem
-                                                            value={departmenttypeid.title}
+                                                            value={`${departmenttypeid.id}:${departmenttypeid.title}`}
                                                             key={departmenttypeid.id}
                                                             onSelect={() => {
                                                                 form.setValue("departmenttypeid", departmenttypeid.id);
@@ -285,7 +285,7 @@ function InputForm({
                                                 {departments && departments.length > 0 ? (
                                                     departments.map((parentid) => (
                                                         <CommandItem
-                                                            value={parentid.title}
+                                                            value={`${parentid.id}:${parentid.title}`}
                                                             key={parentid.id}
                                                             onSelect={() => {
                                                                 form.setValue("parentid", parentid.id);
