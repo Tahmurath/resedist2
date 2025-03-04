@@ -34,7 +34,7 @@ const useDebounce = (value: string | null, delay: number) => {
   return debouncedValue;
 };
 
-const FormComponent = lazy(() => import("./Depform"));
+const InputForm = lazy(() => import("./Depform"));
 
 const useDepartments = () => {
   const queryClient = useQueryClient();
@@ -218,7 +218,7 @@ const DepartmentPage = () => {
             <DialogDescription>Add new department</DialogDescription>
           </DialogHeader>
           <Suspense fallback={<p>در حال بارگذاری...</p>}>
-            <FormComponent onSuccess={handleFormSuccess} />
+            <InputForm onSuccess={handleFormSuccess} />
           </Suspense>
           <DialogFooter>
             <Button variant={"outline"} onClick={() => setOpen(false)}>
