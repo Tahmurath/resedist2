@@ -1,14 +1,12 @@
-"use client"
-
 import {z} from "zod";
-import React, {useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
-import {getUserFromToken, isExpiredJwt, saveTokenToCookie} from "@/lib/jwt";
+
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {useRouter} from "next/navigation";
+
 import {toast} from "@/hooks/use-toast";
 import {
     Command,
@@ -25,9 +23,9 @@ import {
 } from "@/components/ui/popover"
 import {cn} from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react"
-
 import {axiosInstance} from "@/axios";
 import Depview from "@/pages/admin/departments/Depview.tsx";
+
 
 interface DepType {
     id: number;
@@ -36,11 +34,11 @@ interface DepType {
 interface Department {
     id: number;
     title: string;
-    DepartmentType: number;
-    Parent	: number;
+    departmentType: number;
+    parent	: number;
 }
 
-const token = isExpiredJwt()
+//const token = isExpiredJwt()
 
 const FormSchema = z.object({
     title: z.string().min(3, {
@@ -81,62 +79,53 @@ function InputForm({
     const [isPopoverOpen2, setIsPopoverOpen2] = useState(false);
     const [depTypes, setDepTypes] = useState<DepType[]>([]);
     const [departments, setDepartments] = useState<Department[]>([]);
-    const [query, setQuery] = useState("");
     const [query1, setQuery1] = useState("");
     const [query2, setQuery2] = useState("");
     const [record, setRecord] = useState(null);
-
+    const [isLoading, setIsLoading] = useState(false);
 
 
     useEffect(() => {
         async function fetchDepTypes(searchQuery = "") {
             try {
+                //const response = await fetch(`http://localhost:8080/api/v1/department-type?query=${searchQuery}`);
                 const response = await axiosInstance.get(`/api/v1/department-type?title=${searchQuery}`);
-                setDepTypes(response.data.data);
+                const data = response.data;
+                setDepTypes(data.data);
             } catch (error) {
                 console.error('Error fetching depTypes:', error);
                 setDepTypes([]); // مقداردهی اولیه در صورت بروز خطا
             }
         }
-    
+
         fetchDepTypes(query1);
     }, [query1]);
 
     useEffect(() => {
         async function fetchDepartments(searchQuery = "") {
+
             try {
-                // const response = await fetch(`http://localhost:4000/api/v1/4000?title=${searchQuery}`);
                 const response = await axiosInstance.get(`/api/v1/department?title=${searchQuery}`);
-                //const data = response.data;
-                setDepartments(response.data.data);
+                const data = response.data;
+                setDepartments(data.data);
             } catch (error) {
-                console.error('Error fetching depTypes:', error);
-                setDepartments([]); // مقداردهی اولیه در صورت بروز خطا
+                console.error('Error fetching departments:', error);
+                setDepTypes([]); // مقداردهی اولیه در صورت بروز خطا
             }
         }
 
         fetchDepartments(query2);
     }, [query2]);
 
-    const [isLoading, setIsLoading] = useState(false);
-
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         //alert(JSON.stringify(data, null, 2))
-
-        //e.preventDefault();
-        // setIsLoading(true);
-
-
+        
 
         try {
             const response2 = await axiosInstance.post(`/api/v1/department`, data);
-            // const newData = response2.data.data;
             setRecord(response2.data.data);
-            // setRecord(newData);
-            //console.info(response2.data)
-            //const data2 = response2.data;
+           
             if (onSuccess) onSuccess();
-
             toast({
                 title: "You submitted the following values:",
                 description: (
@@ -146,16 +135,15 @@ function InputForm({
                 ),
             })
 
-            //navigate(`/admin/department/${newData.id}`, { state: newData });
-
         } catch (error) {
             console.error('Error fetching departments:', error);
         } finally {
             setIsLoading(false);
         }
+        
 
+        //const response = await axiosInstance.post(`/api/v1/department`, data);
     }
-
 
     return (
         <div>
@@ -263,7 +251,7 @@ function InputForm({
                     render={({ field }) => (
                         <FormItem className="flex flex-col">
                             <FormLabel>parentid</FormLabel>
-                            <Popover open={isPopoverOpen2} onOpenChange={setIsPopoverOpen2}>
+                            <Popover open={isPopoverOpen2} onOpenChange={setIsPopoverOpen2} >
                                 <PopoverTrigger asChild>
                                     <FormControl>
                                         <Button
@@ -289,7 +277,7 @@ function InputForm({
                                         <CommandInput
                                             placeholder="Search framework..."
                                             className="h-9"
-                                            onValueChange={query2}
+                                            onValueChange={setQuery2}
                                         />
                                         <CommandList>
                                             <CommandEmpty>No framework found.</CommandEmpty>
@@ -341,4 +329,3 @@ function InputForm({
 }
 
 export default InputForm
-
