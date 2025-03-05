@@ -114,7 +114,7 @@ const useDepartments = () => {
   const handleSortingChange = (column: string, order: "asc" | "desc") => {
     setSortColumn(column);
     setSortOrder(order);
-    refreshDepartments();
+    //refreshDepartments();
   };
 
   const handleTitleChange = (title: string) => {
@@ -129,7 +129,7 @@ const useDepartments = () => {
       setParentIds(values.length > 0 ? values.map((v) => Number(v)) : null);
     }
     setCurrentPage(1);
-    refreshDepartments();
+    //refreshDepartments();
   };
 
   return {
