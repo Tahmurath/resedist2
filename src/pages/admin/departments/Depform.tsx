@@ -25,7 +25,7 @@ import {cn} from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react"
 import {axiosInstance} from "@/axios";
 import Depview from "@/pages/admin/departments/Depview.tsx";
-
+import { Loader2 } from 'lucide-react';
 
 interface DepType {
     id: number;
@@ -119,7 +119,7 @@ function InputForm({
 
     async function onSubmit(data: z.infer<typeof FormSchema>) {
         //alert(JSON.stringify(data, null, 2))
-        
+        setIsLoading(true);
 
         try {
             const response2 = await axiosInstance.post(`/api/v1/department`, data);
@@ -320,7 +320,10 @@ function InputForm({
                 />
 
 
-                <Button type="submit">Submit</Button>
+                <Button type="submit" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="animate-spin" /> : 'Submit'}
+                </Button>
+
             </form>
             </Form>
             )}

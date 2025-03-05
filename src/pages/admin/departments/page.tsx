@@ -17,6 +17,7 @@ import { NavLink } from "react-router";
 import { DataTableToolbar } from "@/pages/admin/departments/grid/data-table-toolbar.tsx";
 import { Deptable } from "@/pages/admin/departments/table.ts";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Loader2 } from 'lucide-react';
 
 const useDebounce = (value: string | null, delay: number) => {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -248,7 +249,11 @@ const DepartmentPage = () => {
               className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
             >
               Refresh
+              
             </button>
+            {isFetching && departments.length ? (
+              <Loader2 className="animate-spin" />
+            ) : null}
           </div>
           <div className="p-4">
             <DataTableToolbar
@@ -258,11 +263,7 @@ const DepartmentPage = () => {
             />
           </div>
           <div className="relative">
-            {/* {isFetching && departments.length ? (
-              <div className="absolute top-0 left-0 w-full bg-gray-200 bg-opacity-50 text-center py-1">
-                در حال به‌روزرسانی...
-              </div>
-            ) : null} */}
+            
             <div className="min-h-[300px] transition-all duration-300">
               <DataTable
                 table={table}
