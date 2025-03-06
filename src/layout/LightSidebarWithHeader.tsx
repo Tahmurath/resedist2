@@ -2,7 +2,8 @@ import {Navigate, NavLink, useNavigate, useLocation} from "react-router";
 import { Outlet } from "react-router";
 import { useTranslation } from "react-i18next";
 import {} from '@heroicons/react/24/outline'
-
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/react'
+import { ChevronRightIcon } from '@heroicons/react/20/solid'
 
 import { useState } from 'react'
 import {
@@ -57,7 +58,13 @@ function LightSidebarWithHeader() {
         { name: t("site.home"), href: '/', icon: HomeIcon, current: true },
         { name: t("site.admin"), href: '/admin', icon: CalendarIcon, current: false },
         { name: t("site.panel"), href: '/admin/panel', icon: UsersIcon, current: false },
-        { name: t("site.departments"), href: '/admin/departments', icon: UsersIcon, current: false },
+        { name: t("site.departments"), href: '/admin/departments', icon: UsersIcon, current: false ,
+            children: [
+                { name: t("site.departments"), href: '/admin/departments' },
+                { name: 'Human Resources', href: '/admin/panel' },
+                { name: 'Customer Success', href: '/admin' },
+              ],
+        },
         // { name: 'About', href: '/about', icon: FolderIcon, current: false },
         // { name: 'Documents', href: '#', icon: DocumentDuplicateIcon, current: false },
         // { name: 'Reports', href: '#', icon: ChartPieIcon, current: false },
@@ -229,24 +236,89 @@ function LightSidebarWithHeader() {
                                     <ul role="list" className="-mx-2 space-y-1">
                                         {navigation.map((item) => (
                                             <li key={item.name}>
-                                                <NavLink
-                                                    to={item.href}
-                                                    className={classNames(
-                                                        location.pathname === item.href
-                                                            ? 'bg-gray-50 text-indigo-600'
-                                                            : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
-                                                        'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
-                                                    )}
-                                                >
-                                                    <item.icon
-                                                        aria-hidden="true"
-                                                        className={classNames(
-                                                            location.pathname === item.href ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
-                                                            'h-6 w-6 shrink-0',
-                                                        )}
-                                                    />
-                                                    {item.name}
-                                                </NavLink>
+
+
+                    {!item.children ? (
+                    <NavLink
+                      to={item.href}
+                      className={classNames(
+                        item.current ? 'bg-gray-50' : 'hover:bg-gray-50',
+                        'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6 text-gray-700',
+                      )}
+                    >
+                      <item.icon aria-hidden="true" className="h-6 w-6 shrink-0 text-gray-400" />
+                      {item.name}
+                    </NavLink>
+                  ) : (
+                    <Disclosure as="div">
+                      <DisclosureButton
+                        className={classNames(
+                          item.current ? 'bg-gray-50' : 'hover:bg-gray-50',
+                          'group flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm font-semibold leading-6 text-gray-700',
+                        )}
+                      >
+                        <item.icon aria-hidden="true" className="h-6 w-6 shrink-0 text-gray-400" />
+                        {item.name}
+                        <ChevronRightIcon
+                          aria-hidden="true"
+                          className="ml-auto h-5 w-5 shrink-0 text-gray-400 group-data-[open]:rotate-90 group-data-[open]:text-gray-500"
+                        />
+                      </DisclosureButton>
+                      <DisclosurePanel as="ul" className="mt-1 px-2">
+                        {item.children.map((subItem) => (
+                          <li key={subItem.name}>
+                            {/* 44px */}
+                            {/* <DisclosureButton
+                              as="a"
+                              href={subItem.href}
+                              className={classNames(
+                                subItem.current ? 'bg-gray-50' : 'hover:bg-gray-50',
+                                'block rounded-md py-2 pl-9 pr-2 text-sm leading-6 text-gray-700',
+                              )}
+                            >
+                              {subItem.name}
+                            </DisclosureButton> */}
+
+                            <NavLink
+                                to={subItem.href}
+                                className={classNames(
+                                    location.pathname === subItem.href
+                                        ? 'bg-gray-50 text-indigo-600'
+                                        : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
+                                    'group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6',
+                                )}
+                            >
+                                <item.icon
+                                    aria-hidden="true"
+                                    className={classNames(
+                                        location.pathname === subItem.href ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
+                                        'h-6 w-6 shrink-0',
+                                    )}
+                                />
+                                {subItem.name}
+                            </NavLink>
+
+
+
+
+
+                            
+                          </li>
+                        ))}
+                      </DisclosurePanel>
+                    </Disclosure>
+                  )}
+
+
+
+
+
+
+
+
+
+
+                                                
                                             </li>
                                         ))}
                                     </ul>
