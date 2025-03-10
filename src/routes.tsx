@@ -7,6 +7,7 @@ import { Suspense, lazy } from "react";
 
 //const MainLayout = lazy(() => import('./layout/MainLayout'));
 const Navlayout = lazy(() => import('./layout/Navlayout'));
+const Shadcnlayout = lazy(() => import('./layout/shadcn'));
 const LightSidebarWithHeader = lazy(() => import('./layout/LightSidebarWithHeader'));
 //const DarkSidebarWithHeader = lazy(() => import('./layout/DarkSidebarWithHeader'));
 //const AdminLayout = lazy(() => import('./layout/AdminLayout'));
@@ -28,7 +29,7 @@ export const router = createBrowserRouter([
     path: '/',
     element: (
         <Suspense fallback={<>...</>}>
-          <Navlayout />
+          <Shadcnlayout />
         </Suspense>
     ),
     children: [
@@ -62,7 +63,7 @@ export const router = createBrowserRouter([
     path: 'admin',
     element: (
         <Suspense fallback={<>...</>}>
-          <LightSidebarWithHeader />
+          <Shadcnlayout />
         </Suspense>
     ),
     children: [
