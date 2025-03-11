@@ -1,21 +1,48 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import {Outlet} from "react-router";
+import {Separator} from "@radix-ui/react-select";
+import {
+    Breadcrumb,
+    BreadcrumbItem,
+    BreadcrumbLink,
+    BreadcrumbList, BreadcrumbPage,
+    BreadcrumbSeparator
+} from "@/components/ui/breadcrumb.tsx";
 
 
 
 const Navlayout = () =>{
 
     return (
+
         <SidebarProvider>
-          <AppSidebar />
-          <main className="relative flex w-full flex-1 flex-col bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow">
+        <AppSidebar />
+        <SidebarInset>
+            <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
+                <div className="flex items-center gap-2 px-4">
+                    <SidebarTrigger className="-ml-1" />
+                    <Separator orientation="vertical" className="mr-2 h-4" />
+                    <Breadcrumb>
+                        <BreadcrumbList>
+                            <BreadcrumbItem className="hidden md:block">
+                                <BreadcrumbLink href="#">
+                                    Building Your Application
+                                </BreadcrumbLink>
+                            </BreadcrumbItem>
+                            <BreadcrumbSeparator className="hidden md:block" />
+                            <BreadcrumbItem>
+                                <BreadcrumbPage>Data Fetching</BreadcrumbPage>
+                            </BreadcrumbItem>
+                        </BreadcrumbList>
+                    </Breadcrumb>
+                </div>
+            </header>
             <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-            <SidebarTrigger />
-            <Outlet />
+                <Outlet />
             </div>
-          </main>
-        </SidebarProvider>
+        </SidebarInset>
+    </SidebarProvider>
       )
 }
 
