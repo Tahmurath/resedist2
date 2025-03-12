@@ -23,12 +23,18 @@ import { departmentSchema } from "./schema.ts"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>
+  handleDialog: () => void
 }
 
 export function DataTableRowActions<TData>({
   row,
+  handleDialog,
 }: DataTableRowActionsProps<TData>) {
   const department = departmentSchema.parse(row.original)
+
+  const edit = ()=>{
+    handleDialog()
+  }
 
   return (
     <DropdownMenu>
@@ -42,7 +48,7 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        <DropdownMenuItem>Edit</DropdownMenuItem>
+        <DropdownMenuItem onClick={edit}>Edit</DropdownMenuItem>
         <DropdownMenuItem>Make a copy</DropdownMenuItem>
         <DropdownMenuItem>Favorite</DropdownMenuItem>
         <DropdownMenuSeparator />

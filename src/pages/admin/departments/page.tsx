@@ -1,4 +1,4 @@
-import { columns } from "./grid/columns";
+import { colFunc } from "./grid/columns";
 import { DataTable } from "@/components/data-table/data-table.tsx";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { axiosInstance } from "@/axios";
@@ -154,8 +154,17 @@ const useDepartments = () => {
 };
 
 const DepartmentPage = () => {
+
+
+
+
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
+
+  const handleDialog = () => {
+    setOpen(true);
+  };
+  const columns = colFunc(handleDialog)
 
   const {
     departments,
@@ -188,6 +197,8 @@ const DepartmentPage = () => {
     //setOpen(false);
   };
 
+
+
   if (isLoading && isInitialLoad) {
     return <p>در حال بارگذاری...</p>;
   }
@@ -212,7 +223,7 @@ const DepartmentPage = () => {
         </div> */}
       </div>
       <Dialog open={open} onOpenChange={setOpen} modal={true}>
-        
+
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add new department</DialogTitle>
@@ -222,65 +233,69 @@ const DepartmentPage = () => {
             <InputForm onSuccess={handleFormSuccess} />
           </Suspense>
           <DialogFooter>
-            <Button variant={"outline"} onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
+            {/*<Button variant={"outline"} onClick={() => setOpen(false)}>*/}
+            {/*  Cancel*/}
+            {/*</Button>*/}
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <div className="space-y-4">
-        <div className="bg-muted/40 border rounded-[0.5rem]">
-          <div className="flex flex-wrap border-b bg-muted/80 pl-4">
-            <NavLink
-              className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
-              to="/admin/depform"
-            >
-              Add new department
-            </NavLink>
-            <button
-              onClick={() => setOpen(true)}
-              className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
-            >
-              Add new department
-            </button>
-            <button
-              onClick={refreshDepartments}
-              className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
-            >
-              Refresh
-              
-            </button>
-            {isFetching && departments.length ? (
-              <Loader2 className="animate-spin" />
-            ) : null}
-          </div>
-          <div className="p-4">
-            <DataTableToolbar
-              table={table}
-              onTitleChange={handleTitleChange}
-              onFilterChange={handleFilterChange}
-            />
-          </div>
-          <div className="relative">
-            
-            <div className="min-h-[300px] transition-all duration-300">
-              <DataTable
-                table={table}
-                columns={columns}
-                totalPages={totalPages}
-                totalRows={totalRows}
-                currentPage={currentPage}
-                rowsPerPage={rowsPerPage}
-                onRowsPerPage={(page: number) => setRowsPerPage(page)}
-                onPageChange={(page: number) => setCurrentPage(page)}
-              />
+
+        {/*<div className="bg-muted/40 border rounded-[0.5rem] border-gray-300">*/}
+        {/*  <div className="flex flex-wrap border-b  pl-4 border-gray-300">*/}
+
+            <div className="bg-muted/40 border rounded-[0.5rem] border-gray-300">
+              <div className="flex flex-wrap border-b bg-muted/90 pl-4 border-gray-300 rounded-t-[0.5rem]">
+                <NavLink
+                    className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+                    to="/admin/depform"
+                >
+                  Add new department
+                </NavLink>
+                <button
+                    onClick={() => setOpen(true)}
+                    className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+                >
+                  Add new department
+                </button>
+                <button
+                    onClick={refreshDepartments}
+                    className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
+                >
+                  Refresh
+
+                </button>
+                {isFetching && departments.length ? (
+                    <Loader2 className="animate-spin"/>
+                ) : null}
+              </div>
+              <div className="p-4">
+                <DataTableToolbar
+                    table={table}
+                    onTitleChange={handleTitleChange}
+                    onFilterChange={handleFilterChange}
+                />
+              </div>
+              <div className="relative ">
+
+                <div className="min-h-[300px] transition-all duration-300 ">
+                  <DataTable
+                      table={table}
+                      columns={columns}
+                      totalPages={totalPages}
+                      totalRows={totalRows}
+                      currentPage={currentPage}
+                      rowsPerPage={rowsPerPage}
+                      onRowsPerPage={(page: number) => setRowsPerPage(page)}
+                      onPageChange={(page: number) => setCurrentPage(page)}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
+        );
+        };
 
-export default DepartmentPage;
+        export default DepartmentPage;

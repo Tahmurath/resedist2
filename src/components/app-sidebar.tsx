@@ -25,8 +25,12 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { useTranslation } from "react-i18next";
 
-// This is sample data.
+
+export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+    const { t } = useTranslation();
 const data = {
   user: {
     name: "shadcn",
@@ -58,15 +62,15 @@ const data = {
       isActive: true,
       items: [
         {
-          title: "History",
+          title: t("site.admin"),
           url: "/admin",
         },
         {
-          title: "Starred",
+          title: t("site.panel"),
           url: "/admin/panel",
         },
         {
-          title: "Settings",
+          title: t("site.departments"),
           url: "/admin/departments",
         },
       ],
@@ -155,8 +159,6 @@ const data = {
     },
   ],
 }
-
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
       <Sidebar collapsible="offcanvas" {...props}>
         <SidebarHeader>
