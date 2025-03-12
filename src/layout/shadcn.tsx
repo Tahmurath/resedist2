@@ -1,7 +1,7 @@
 import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import {Outlet} from "react-router";
-import {Separator} from "@radix-ui/react-select";
+import {Separator} from "@/components/ui/separator.tsx";
 import {
     Breadcrumb,
     BreadcrumbItem,
