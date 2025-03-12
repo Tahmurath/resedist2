@@ -15,6 +15,7 @@ import {Navigate, NavLink, useNavigate, useLocation} from "react-router";
 import {getAuthToken, getUser, setAuthToken} from "@/services/authService.ts";
 import { useTranslation } from "react-i18next";
 import UserMenu from "@/components/UserMenu.tsx";
+import {useState} from "react";
 
 
 const Navlayout = () =>{
@@ -30,9 +31,16 @@ const Navlayout = () =>{
 
     const { t } = useTranslation();
 
+    const [sidebarOpen, setSidebarOpen] = useState(true)
+
+    const handleNavLinkClick = () => {
+        setSidebarOpen(false);
+    };
+
     return (
 
-        <SidebarProvider>
+        <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        {/*<AppSidebar onClick={handleNavLinkClick}/>*/}
         <AppSidebar />
         <SidebarInset>
 
