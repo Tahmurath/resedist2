@@ -22,18 +22,18 @@ import {
 import { departmentSchema } from "./schema.ts"
 
 interface DataTableRowActionsProps<TData> {
-  row: Row<TData>
-  handleDialog: () => void
+  row: Row<TData>;
+  handleDialog: (id: number) => void;
 }
 
 export function DataTableRowActions<TData>({
   row,
   handleDialog,
 }: DataTableRowActionsProps<TData>) {
-  const department = departmentSchema.parse(row.original)
+  const department = departmentSchema.parse(row.original);
 
-  const edit = ()=>{
-    handleDialog()
+  const edit = () => {
+    handleDialog(department?.id);
   }
 
   return (

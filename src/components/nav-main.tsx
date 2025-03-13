@@ -15,9 +15,9 @@ import {
   SidebarMenuItem,
   SidebarMenuSub,
   SidebarMenuSubButton,
-  SidebarMenuSubItem,
+  SidebarMenuSubItem, useSidebar,
 } from "@/components/ui/sidebar"
-import {NavLink} from "react-router";
+import {NavLink, useLocation} from "react-router";
 
 export function NavMain({
   items,
@@ -33,6 +33,10 @@ export function NavMain({
     }[]
   }[]
 }) {
+
+  const { setOpenMobile } = useSidebar();
+  const location = useLocation();
+
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
@@ -56,8 +60,8 @@ export function NavMain({
                 <SidebarMenuSub>
                   {item.items?.map((subItem) => (
                     <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <NavLink to={subItem.url}>
+                      <SidebarMenuSubButton asChild isActive={location.pathname === subItem.url}>
+                        <NavLink to={subItem.url} onClick={() => setOpenMobile(false)}>
                           <span>{subItem.title}</span>
                         </NavLink>
                       </SidebarMenuSubButton>

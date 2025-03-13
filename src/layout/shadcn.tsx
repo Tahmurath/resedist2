@@ -39,9 +39,9 @@ const Navlayout = () =>{
 
     return (
 
-        <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-        {/*<AppSidebar onClick={handleNavLinkClick}/>*/}
-        <AppSidebar />
+        // <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        <SidebarProvider >
+        <AppSidebar  />
         <SidebarInset>
 
 

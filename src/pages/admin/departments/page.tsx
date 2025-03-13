@@ -1,4 +1,4 @@
-import { colFunc } from "./grid/columns";
+import {GetColumns} from "./grid/columns";
 import { DataTable } from "@/components/data-table/data-table.tsx";
 import { lazy, Suspense, useState, useEffect } from "react";
 import { axiosInstance } from "@/axios";
@@ -164,7 +164,13 @@ const DepartmentPage = () => {
   const handleDialog = () => {
     setOpen(true);
   };
-  const columns = colFunc(handleDialog)
+
+  const handleFormSuccess = () => {
+    refreshDepartments();
+    //setOpen(false);
+  };
+
+  const columns = GetColumns(handleDialog)
 
   const {
     departments,
@@ -191,11 +197,6 @@ const DepartmentPage = () => {
     columns: columns,
     onSortingChange: handleSortingChange,
   });
-
-  const handleFormSuccess = () => {
-    refreshDepartments();
-    //setOpen(false);
-  };
 
 
 
@@ -296,6 +297,6 @@ const DepartmentPage = () => {
           </div>
         </div>
         );
-        };
+};
 
-        export default DepartmentPage;
+export default DepartmentPage;

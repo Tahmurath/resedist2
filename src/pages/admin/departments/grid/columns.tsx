@@ -10,7 +10,7 @@ import { DataTableRowActions } from "./data-table-row-actions"
 
 // const { t } = useTranslation();
 
-export const colFunc = (handleDialog: () => void):ColumnDef<Department>[]=>{
+export const GetColumns = (handleDialog: (id: number) => void):ColumnDef<Department>[]=>{
 
   const columns: ColumnDef<Department>[] = [
     {
