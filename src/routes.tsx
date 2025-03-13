@@ -29,7 +29,7 @@ export const router = createBrowserRouter([
     path: '/',
     element: (
         <Suspense fallback={<>...</>}>
-          <Shadcnlayout />
+          <Navlayout />
         </Suspense>
     ),
     children: [
@@ -110,7 +110,15 @@ export const router = createBrowserRouter([
             path: 'department/:id',
             element: (
                 <Suspense fallback={<>...</>}>
-                    <ViewItem />
+                    <ViewItem record={null} />
+                </Suspense>
+            ),
+        },
+        {
+             path: 'department/:id/edit',
+            element: (
+                <Suspense fallback={<>...</>}>
+                    <Depform />
                 </Suspense>
             ),
         },

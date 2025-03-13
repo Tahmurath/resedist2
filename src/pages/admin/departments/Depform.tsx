@@ -26,6 +26,7 @@ import { Check, ChevronsUpDown } from "lucide-react"
 import {axiosInstance} from "@/axios";
 import Depview from "@/pages/admin/departments/Depview.tsx";
 import { Loader2 } from 'lucide-react';
+import {useParams } from "react-router";
 
 interface DepType {
     id: number;
@@ -35,45 +36,26 @@ interface Department {
     id: number;
     title: string;
     departmentType: number;
-    parent	: number;
+    parent: number;
 }
 
-//const token = isExpiredJwt()
-
 const FormSchema = z.object({
-    title: z.string().min(3, {
-        message: "Title must be at least 3 characters.",
-    }),
-    departmenttypeid: z.preprocess((value) => Number(value), z.number({
-        message: "DepartmentTypeID must be a number.",
-    })),
-    parentid: z.preprocess((value) => Number(value), z.number({
-        message: "ParentID must be a number.",
-    })),
-
+    title: z.string().min(3, { message: "Title must be at least 3 characters." }),
+    departmenttypeid: z.preprocess((value) => Number(value), z.number({ message: "DepartmentTypeID must be a number." })),
+    parentid: z.preprocess((value) => Number(value), z.number({ message: "ParentID must be a number." })),
 });
 
-
-function InputForm({
-                       title = "",
-                       departmenttypeid,
-                       parentid,
-                       onSuccess,
-                   }: {
-    title?: string; // می‌تواند خالی باشد
-    departmenttypeid?: number; // می‌تواند خالی باشد
-    parentid?: number; // می‌تواند خالی باشد
-    onSuccess?: () => void | undefined;
-}) {
+function InputForm({ dep_id, onSuccess }: { dep_id?: number; onSuccess?: () => void }) {
+    const { id } = useParams(); // گرفتن id از URL
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            title: title,
-            departmenttypeid: departmenttypeid,
-            parentid: parentid,
+            title: "",
+            departmenttypeid: undefined,
+            parentid: undefined,
         },
-    })
+    });
 
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [isPopoverOpen2, setIsPopoverOpen2] = useState(false);
@@ -83,66 +65,125 @@ function InputForm({
     const [query2, setQuery2] = useState("");
     const [record, setRecord] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [isRecordLoaded, setIsRecordLoaded] = useState(false); // حالت جدید برای هماهنگی
 
+    // dep_id= 202
+    // تعیین اینکه آیا در حالت ویرایش هستیم یا خیر
+    const effectiveId = dep_id || id; // اولویت با dep_id است، اگر نبود از id استفاده می‌شه
 
+    // گرفتن داده‌های رکورد برای ویرایش
     useEffect(() => {
-        async function fetchDepTypes(searchQuery = "") {
+        async function fetchRecord(recordId: number) {
+            setIsLoading(true);
             try {
-                //const response = await fetch(`http://localhost:8080/api/v1/department-type?query=${searchQuery}`);
-                const response = await axiosInstance.get(`/api/v1/department-type?title=${searchQuery}`);
-                const data = response.data;
-                setDepTypes(data.data);
+                const response = await axiosInstance.get(`/api/v1/department/${recordId}?expand=true`);
+                const record = response.data.data;
+                form.reset({
+                    title: record.title,
+                    departmenttypeid: typeof record.departmentType === "number" ? record.departmentType : record.departmentType.id,
+                    parentid: typeof record.parent === "number" ? record.parent : record.parent.id,
+                });
+
+                // اضافه کردن departmentType به لیست
+                if (record.departmentType && typeof record.departmentType !== "number") {
+                    setDepTypes((prev) => {
+                        if (!prev.some((dt) => dt.id === record.departmentType.id)) {
+                            return [...prev, record.departmentType];
+                        }
+                        return prev;
+                    });
+                }
+
+                // اضافه کردن parent به لیست
+                if (record.parent && typeof record.parent !== "number") {
+                    setDepartments((prev) => {
+                        if (!prev.some((d) => d.id === record.parent.id)) {
+                            return [...prev, record.parent];
+                        }
+                        return prev;
+                    });
+                }
             } catch (error) {
-                console.error('Error fetching depTypes:', error);
-                setDepTypes([]); // مقداردهی اولیه در صورت بروز خطا
+                console.error("Error fetching record:", error);
+                toast({ title: "Error", description: "Failed to load record." });
+            } finally {
+                setIsLoading(false);
+                setIsRecordLoaded(true); // وقتی رکورد لود شد یا خطا داد، این رو true کن
             }
         }
 
+        if (effectiveId) {
+            fetchRecord(effectiveId);
+        } else {
+            setIsLoading(false);
+            setIsRecordLoaded(true);
+        }
+    }, [effectiveId, form]);
+
+    // گرفتن انواع دپارتمان
+    useEffect(() => {
+
+        if (!isRecordLoaded) return; // فقط وقتی رکورد لود شده اجرا بشه
+
+        async function fetchDepTypes(searchQuery = "") {
+            try {
+                const response = await axiosInstance.get(`/api/v1/department-type?title=${searchQuery}`);
+                setDepTypes(response.data.data);
+            } catch (error) {
+                console.error("Error fetching depTypes:", error);
+                setDepTypes([]);
+            }
+        }
         fetchDepTypes(query1);
     }, [query1]);
 
+    // گرفتن دپارتمان‌ها
     useEffect(() => {
-        async function fetchDepartments(searchQuery = "") {
 
+        if (!isRecordLoaded) return; // فقط وقتی رکورد لود شده اجرا بشه
+        async function fetchDepartments(searchQuery = "") {
             try {
                 const response = await axiosInstance.get(`/api/v1/department?title=${searchQuery}`);
-                const data = response.data;
-                setDepartments(data.data);
+                setDepartments(response.data.data);
             } catch (error) {
-                console.error('Error fetching departments:', error);
-                setDepTypes([]); // مقداردهی اولیه در صورت بروز خطا
+                console.error("Error fetching departments:", error);
+                setDepartments([]);
             }
         }
-
         fetchDepartments(query2);
     }, [query2]);
 
+    // سابمیت فرم
     async function onSubmit(data: z.infer<typeof FormSchema>) {
-        //alert(JSON.stringify(data, null, 2))
-        setIsLoading(true);
-
+        //setIsLoading(true);
         try {
-            const response2 = await axiosInstance.post(`/api/v1/department`, data);
-            setRecord(response2.data.data);
-           
+            let response;
+            if (effectiveId) {
+                // حالت ویرایش: درخواست PUT
+                response = await axiosInstance.put(`/api/v1/department/${effectiveId}`, data);
+                setRecord(response.data.data);
+            } else {
+                // حالت ثبت جدید: درخواست POST
+                response = await axiosInstance.post(`/api/v1/department`, data);
+                setRecord(response.data.data);
+            }
+            
+
             if (onSuccess) onSuccess();
             toast({
-                title: "You submitted the following values:",
+                title: effectiveId ? "Record updated" : "Record created",
                 description: (
                     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-              <code className="text-white">{JSON.stringify(response2.data.data, null, 2)}</code>
-            </pre>
+                        <code className="text-white">{JSON.stringify(response.data.data, null, 2)}</code>
+                    </pre>
                 ),
-            })
-
+            });
         } catch (error) {
-            console.error('Error fetching departments:', error);
+            console.error("Error submitting form:", error);
+            toast({ title: "Error", description: "Failed to submit form." });
         } finally {
             setIsLoading(false);
         }
-        
-
-        //const response = await axiosInstance.post(`/api/v1/department`, data);
     }
 
     return (

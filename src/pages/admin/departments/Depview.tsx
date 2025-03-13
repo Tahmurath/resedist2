@@ -55,3 +55,7 @@ const ViewItem = ({ record }:{record:Department | null}) => {
 };
 
 export default ViewItem;
+
+
+
+
