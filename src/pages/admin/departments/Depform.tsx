@@ -30,13 +30,24 @@ import {useParams } from "react-router";
 
 interface DepType {
     id: number;
+    departmentType: number;
     title: string;
+    label: string;
 }
+
+// interface Department {
+//     id: number;
+//     title: string;
+//     departmentType: number;
+//     parent: number;
+// }
+
 interface Department {
     id: number;
     title: string;
-    departmentType: number;
-    parent: number;
+    departmentType: number | DepType; // می‌تونه عدد یا آبجکت باشه
+    parent: number | Department; // می‌تونه عدد یا آبجکت باشه
+    label?: string;
 }
 
 const FormSchema = z.object({
@@ -45,7 +56,7 @@ const FormSchema = z.object({
     parentid: z.preprocess((value) => Number(value), z.number({ message: "ParentID must be a number." })),
 });
 
-function InputForm({ dep_id, onSuccess }: { dep_id?: number; onSuccess?: () => void }) {
+function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => void }) {
     const { id } = useParams(); // گرفتن id از URL
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -64,51 +75,35 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: number; onSuccess?: () => v
     const [query1, setQuery1] = useState("");
     const [query2, setQuery2] = useState("");
     const [record, setRecord] = useState(null);
+    const [effectiveRecord, setEffectiveRecord] = useState<Department | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [isRecordLoaded, setIsRecordLoaded] = useState(false); // حالت جدید برای هماهنگی
+    const [isRecordLoaded, setIsRecordLoaded] = useState(false);
 
     // dep_id= 202
     // تعیین اینکه آیا در حالت ویرایش هستیم یا خیر
-    const effectiveId = dep_id || id; // اولویت با dep_id است، اگر نبود از id استفاده می‌شه
+    const effectiveId = dep_id || id;
 
-    // گرفتن داده‌های رکورد برای ویرایش
     useEffect(() => {
-        async function fetchRecord(recordId: number) {
+        async function fetchRecord(recordId: string) {
             setIsLoading(true);
             try {
                 const response = await axiosInstance.get(`/api/v1/department/${recordId}?expand=true`);
                 const record = response.data.data;
+                setEffectiveRecord(record);
+                // console.info(record)
+                
                 form.reset({
                     title: record.title,
                     departmenttypeid: typeof record.departmentType === "number" ? record.departmentType : record.departmentType.id,
                     parentid: typeof record.parent === "number" ? record.parent : record.parent.id,
                 });
-
-                // اضافه کردن departmentType به لیست
-                if (record.departmentType && typeof record.departmentType !== "number") {
-                    setDepTypes((prev) => {
-                        if (!prev.some((dt) => dt.id === record.departmentType.id)) {
-                            return [...prev, record.departmentType];
-                        }
-                        return prev;
-                    });
-                }
-
-                // اضافه کردن parent به لیست
-                if (record.parent && typeof record.parent !== "number") {
-                    setDepartments((prev) => {
-                        if (!prev.some((d) => d.id === record.parent.id)) {
-                            return [...prev, record.parent];
-                        }
-                        return prev;
-                    });
-                }
+                
             } catch (error) {
                 console.error("Error fetching record:", error);
                 toast({ title: "Error", description: "Failed to load record." });
             } finally {
                 setIsLoading(false);
-                setIsRecordLoaded(true); // وقتی رکورد لود شد یا خطا داد، این رو true کن
+                setIsRecordLoaded(true)
             }
         }
 
@@ -116,42 +111,64 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: number; onSuccess?: () => v
             fetchRecord(effectiveId);
         } else {
             setIsLoading(false);
-            setIsRecordLoaded(true);
+            setIsRecordLoaded(true); // اگه رکوردی نیست، مستقیم برو به مرحله بعد
         }
     }, [effectiveId, form]);
 
     // گرفتن انواع دپارتمان
     useEffect(() => {
 
-        if (!isRecordLoaded) return; // فقط وقتی رکورد لود شده اجرا بشه
+        if (effectiveId && !isRecordLoaded) return; // فقط وقتی رکورد لود شده اجرا بشه
 
         async function fetchDepTypes(searchQuery = "") {
             try {
-                const response = await axiosInstance.get(`/api/v1/department-type?title=${searchQuery}`);
+                
+                let url = `/api/v1/department-type?title=${encodeURIComponent(searchQuery)}`
+
+                if(effectiveId){
+                    const depTypeid = effectiveRecord?.departmentType?.id;
+                    url = depTypeid
+                    ? `/api/v1/department-type?title=${encodeURIComponent(searchQuery)}&id=${depTypeid}`: url;
+                }
+
+                const response = await axiosInstance.get(url);
                 setDepTypes(response.data.data);
+                
             } catch (error) {
                 console.error("Error fetching depTypes:", error);
                 setDepTypes([]);
             }
         }
         fetchDepTypes(query1);
-    }, [query1]);
+    }, [query1, effectiveRecord, isRecordLoaded]);
 
     // گرفتن دپارتمان‌ها
     useEffect(() => {
 
-        if (!isRecordLoaded) return; // فقط وقتی رکورد لود شده اجرا بشه
+        if (effectiveId && !isRecordLoaded) return; // فقط وقتی رکورد لود شده اجرا بشه
+
+        
         async function fetchDepartments(searchQuery = "") {
             try {
-                const response = await axiosInstance.get(`/api/v1/department?title=${searchQuery}`);
+                let url = `/api/v1/department?title=${encodeURIComponent(searchQuery)}`
+
+                if(effectiveId){
+                    const parentId = effectiveRecord?.parent?.id;
+                    url = parentId
+                    ? `/api/v1/department?title=${encodeURIComponent(searchQuery)}&id=${parentId}`: url;
+                }
+
+                const response = await axiosInstance.get(url);
                 setDepartments(response.data.data);
             } catch (error) {
                 console.error("Error fetching departments:", error);
                 setDepartments([]);
             }
         }
+
         fetchDepartments(query2);
-    }, [query2]);
+
+    }, [query1, record, isRecordLoaded]);
 
     // سابمیت فرم
     async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -194,6 +211,20 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: number; onSuccess?: () => v
                 </div>
             ) : (
         <Form {...form}>
+
+            {effectiveRecord ? (
+                <>
+                <h1>effectiveRecord.id:{effectiveRecord.id}</h1>
+                <h2>effectiveRecord.title:{effectiveRecord.title}</h2>
+                <h2>effectiveRecord.departmentType:{effectiveRecord.departmentType.title}</h2>
+                <h2>effectiveRecord.parent:{effectiveRecord.parent.title}</h2>
+                </>
+            ) : (
+                <h1>
+                
+                </h1>
+            )}
+
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                     control={form.control}
