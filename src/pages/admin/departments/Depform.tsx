@@ -43,7 +43,7 @@ interface DepType {
 // }
 
 interface Department {
-    id: number;
+    id: string | null;
     title: string;
     departmentType: number | DepType; // می‌تونه عدد یا آبجکت باشه
     parent: number | Department; // می‌تونه عدد یا آبجکت باشه
@@ -53,6 +53,10 @@ interface Department {
 const FormSchema = z.object({
     title: z.string().min(3, { message: "Title must be at least 3 characters." }),
     departmenttypeid: z.preprocess((value) => Number(value), z.number({ message: "DepartmentTypeID must be a number." })),
+    id: z.preprocess(
+        (value) => (value ? Number(value) : undefined), // اگه مقدار داره به عدد تبدیل کن، وگرنه undefined
+        z.number({ message: "ID must be a number." }).optional()
+    ),
     parentid: z.preprocess((value) => Number(value), z.number({ message: "ParentID must be a number." })),
 });
 
@@ -62,6 +66,7 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => v
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
+            id: undefined,
             title: "",
             departmenttypeid: undefined,
             parentid: undefined,
@@ -93,9 +98,10 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => v
                 // console.info(record)
                 
                 form.reset({
+                    id: record.id,
                     title: record.title,
-                    departmenttypeid: typeof record.departmentType === "number" ? record.departmentType : record.departmentType.id,
-                    parentid: typeof record.parent === "number" ? record.parent : record.parent.id,
+                    departmenttypeid: typeof record.departmentType === "number" ? record.departmentType : record.departmentType?.id,
+                    parentid: typeof record.parent === "number" ? record.parent : record.parent?.id,
                 });
                 
             } catch (error) {
@@ -128,7 +134,7 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => v
                 if(effectiveId){
                     const depTypeid = effectiveRecord?.departmentType?.id;
                     url = depTypeid
-                    ? `/api/v1/department-type?title=${encodeURIComponent(searchQuery)}&id=${depTypeid}`: url;
+                    ? `/api/v1/department-type?title=${encodeURIComponent(searchQuery)}&department_type=${depTypeid}`: url;
                 }
 
                 const response = await axiosInstance.get(url);
@@ -155,7 +161,7 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => v
                 if(effectiveId){
                     const parentId = effectiveRecord?.parent?.id;
                     url = parentId
-                    ? `/api/v1/department?title=${encodeURIComponent(searchQuery)}&id=${parentId}`: url;
+                    ? `/api/v1/department?title=${encodeURIComponent(searchQuery)}&department=${parentId}`: url;
                 }
 
                 const response = await axiosInstance.get(url);
@@ -168,7 +174,7 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => v
 
         fetchDepartments(query2);
 
-    }, [query1, record, isRecordLoaded]);
+    }, [query2, record, isRecordLoaded]);
 
     // سابمیت فرم
     async function onSubmit(data: z.infer<typeof FormSchema>) {
@@ -181,7 +187,10 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => v
                 setRecord(response.data.data);
             } else {
                 // حالت ثبت جدید: درخواست POST
-                response = await axiosInstance.post(`/api/v1/department`, data);
+
+                // حالت ثبت جدید: درخواست POST
+                const { id, ...dataWithoutId } = data; // id رو حذف کن
+                response = await axiosInstance.post(`/api/v1/department`, dataWithoutId);
                 setRecord(response.data.data);
             }
             
@@ -212,20 +221,33 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => v
             ) : (
         <Form {...form}>
 
-            {effectiveRecord ? (
-                <>
-                <h1>effectiveRecord.id:{effectiveRecord.id}</h1>
-                <h2>effectiveRecord.title:{effectiveRecord.title}</h2>
-                <h2>effectiveRecord.departmentType:{effectiveRecord.departmentType.title}</h2>
-                <h2>effectiveRecord.parent:{effectiveRecord.parent.title}</h2>
-                </>
-            ) : (
-                <h1>
-                
-                </h1>
-            )}
+            {/*{effectiveRecord ? (*/}
+            {/*    <>*/}
+            {/*    <h1>effectiveRecord.id:{effectiveRecord.id}</h1>*/}
+            {/*    <h2>effectiveRecord.title:{effectiveRecord.title}</h2>*/}
+            {/*    <h2>effectiveRecord.departmentType:{effectiveRecord.departmentType?.title}</h2>*/}
+            {/*    <h2>effectiveRecord.parent:{effectiveRecord.parent?.title}</h2>*/}
+            {/*    </>*/}
+            {/*) : (*/}
+            {/*    <h1>*/}
+
+            {/*    </h1>*/}
+            {/*)}*/}
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                {effectiveId && (
+                    <FormField
+                        control={form.control}
+                        name="id"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormControl>
+                                    <Input {...field} type="hidden" />
+                                </FormControl>
+                            </FormItem>
+                        )}
+                    />
+                )}
                 <FormField
                     control={form.control}
                     name="title"
@@ -395,6 +417,11 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => v
                 <Button type="submit" disabled={isLoading}>
                     {isLoading ? <Loader2 className="animate-spin" /> : 'Submit'}
                 </Button>
+
+                {/*/!* بقیه فیلدها مثل departmenttypeid و parentid *!/*/}
+                {/*<Button type="submit" disabled={isLoading}>*/}
+                {/*    {isLoading ? "در حال ارسال..." : "ذخیره"}*/}
+                {/*</Button>*/}
 
             </form>
             </Form>

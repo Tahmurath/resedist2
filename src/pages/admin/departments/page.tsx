@@ -156,14 +156,25 @@ const useDepartments = () => {
 const DepartmentPage = () => {
 
 
-
+  const [depid, setDepid] = useState<string | null>(null);
 
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
 
-  const handleDialog = () => {
+  const handleDialog = (id) => {
+
+    setDepid(id)
     setOpen(true);
   };
+
+  // useEffect(() => {
+  //
+  //   if (depid){
+  //     setOpen(true);
+  //   }
+  //
+  // }, [depid]);
+
 
   const handleFormSuccess = () => {
     refreshDepartments();
@@ -227,11 +238,19 @@ const DepartmentPage = () => {
 
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Add new department</DialogTitle>
-            <DialogDescription>Add new department</DialogDescription>
+            {depid ? (
+                <>
+                <DialogTitle>Edit department</DialogTitle>
+                <DialogDescription>#{depid}</DialogDescription>
+                </>
+            ) : (
+                <DialogTitle>Add new department</DialogTitle>
+            )}
+
+
           </DialogHeader>
           <Suspense fallback={<p>در حال بارگذاری...</p>}>
-            <InputForm onSuccess={handleFormSuccess} />
+            <InputForm onSuccess={handleFormSuccess} dep_id={depid} />
           </Suspense>
           <DialogFooter>
             {/*<Button variant={"outline"} onClick={() => setOpen(false)}>*/}
@@ -255,7 +274,10 @@ const DepartmentPage = () => {
                   Add new department
                 </NavLink>
                 <button
-                    onClick={() => setOpen(true)}
+                    onClick={() => {
+                      setDepid(null)
+                      setOpen(true)
+                      }}
                     className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
                 >
                   Add new department
