@@ -27,6 +27,9 @@ import {axiosInstance} from "@/axios";
 import Depview from "@/pages/admin/departments/Depview.tsx";
 import { Loader2 } from 'lucide-react';
 import {useParams } from "react-router";
+import useDebounce2 from "@/lib/debounce.ts";
+import {useQuery} from "@tanstack/react-query";
+
 
 interface DepType {
     id: number;
@@ -34,13 +37,6 @@ interface DepType {
     title: string;
     label: string;
 }
-
-// interface Department {
-//     id: number;
-//     title: string;
-//     departmentType: number;
-//     parent: number;
-// }
 
 interface Department {
     id: string | null;
@@ -61,6 +57,25 @@ const FormSchema = z.object({
 });
 
 
+// تابع گرفتن انواع دپارتمان‌ها
+const fetchDepTypes = async (query: string, effectiveId?: string, departmentTypeId?: number) => {
+    let url = `/api/v1/department-type?title=${encodeURIComponent(query)}`;
+    if (effectiveId && departmentTypeId) {
+        url += `&department_type=${departmentTypeId}`;
+    }
+    const response = await axiosInstance.get(url);
+    return response.data.data;
+};
+
+// تابع گرفتن دپارتمان‌ها
+const fetchDepartments = async (query: string, effectiveId?: string, parentId?: string | number) => {
+    let url = `/api/v1/department?title=${encodeURIComponent(query)}`;
+    if (effectiveId && parentId) {
+        url += `&department=${parentId}`;
+    }
+    const response = await axiosInstance.get(url);
+    return response.data.data;
+};
 
 const InputForm = ({ 
         dep_id, 
@@ -87,14 +102,17 @@ const InputForm = ({
 
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [isPopoverOpen2, setIsPopoverOpen2] = useState(false);
-    const [depTypes, setDepTypes] = useState<DepType[]>([]);
-    const [departments, setDepartments] = useState<Department[]>([]);
+    // const [depTypes, setDepTypes] = useState<DepType[]>([]);
+    // const [departments, setDepartments] = useState<Department[]>([]);
     const [query1, setQuery1] = useState("");
     const [query2, setQuery2] = useState("");
     const [record, setRecord] = useState(null);
     const [effectiveRecord, setEffectiveRecord] = useState<Department | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [isRecordLoaded, setIsRecordLoaded] = useState(false);
+
+    const debouncedQuery1 = useDebounce2(query1, 500);
+    const debouncedQuery2 = useDebounce2(query2, 500);
 
     
 
@@ -131,60 +149,23 @@ const InputForm = ({
         }
     }, [effectiveId, form]);
 
-    // گرفتن انواع دپارتمان
-    useEffect(() => {
+    // گرفتن انواع دپارتمان‌ها با react-query
+    const { data: depTypes = [] } = useQuery({
+        queryKey: ["depTypes", debouncedQuery1, effectiveId, effectiveRecord?.departmentType?.id],
+        queryFn: () => fetchDepTypes(debouncedQuery1, effectiveId, effectiveRecord?.departmentType?.id),
+        enabled: isRecordLoaded, // فقط وقتی رکورد لود شده درخواست بفرست
+        staleTime: 5 * 60 * 1000, // ۵ دقیقه کش معتبر
+        cacheTime: 10 * 60 * 1000, // ۱۰ دقیقه داده‌ها تو کش بمونن
+    });
 
-        if (effectiveId && !isRecordLoaded) return; // فقط وقتی رکورد لود شده اجرا بشه
-
-        async function fetchDepTypes(searchQuery = "") {
-            try {
-                
-                let url = `/api/v1/department-type?title=${encodeURIComponent(searchQuery)}`
-
-                if(effectiveId){
-                    const depTypeid = effectiveRecord?.departmentType?.id;
-                    url = depTypeid
-                    ? `/api/v1/department-type?title=${encodeURIComponent(searchQuery)}&department_type=${depTypeid}`: url;
-                }
-
-                const response = await axiosInstance.get(url);
-                setDepTypes(response.data.data);
-                
-            } catch (error) {
-                console.error("Error fetching depTypes:", error);
-                setDepTypes([]);
-            }
-        }
-        fetchDepTypes(query1);
-    }, [query1, effectiveRecord, isRecordLoaded]);
-
-    // گرفتن دپارتمان‌ها
-    useEffect(() => {
-
-        if (effectiveId && !isRecordLoaded) return; // فقط وقتی رکورد لود شده اجرا بشه
-
-        
-        async function fetchDepartments(searchQuery = "") {
-            try {
-                let url = `/api/v1/department?title=${encodeURIComponent(searchQuery)}`
-
-                if(effectiveId){
-                    const parentId = effectiveRecord?.parent?.id;
-                    url = parentId
-                    ? `/api/v1/department?title=${encodeURIComponent(searchQuery)}&department=${parentId}`: url;
-                }
-
-                const response = await axiosInstance.get(url);
-                setDepartments(response.data.data);
-            } catch (error) {
-                console.error("Error fetching departments:", error);
-                setDepartments([]);
-            }
-        }
-
-        fetchDepartments(query2);
-
-    }, [query2, record, isRecordLoaded]);
+    // گرفتن دپارتمان‌ها با react-query
+    const { data: departments = [] } = useQuery({
+        queryKey: ["departments", debouncedQuery2, effectiveId, effectiveRecord?.parent?.id],
+        queryFn: () => fetchDepartments(debouncedQuery2, effectiveId, effectiveRecord?.parent?.id),
+        enabled: isRecordLoaded, // فقط وقتی رکورد لود شده درخواست بفرست
+        staleTime: 5 * 60 * 1000,
+        cacheTime: 10 * 60 * 1000,
+    });
 
     // سابمیت فرم
     async function onSubmit(data: z.infer<typeof FormSchema>) {

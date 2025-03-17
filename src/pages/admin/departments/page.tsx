@@ -18,22 +18,8 @@ import { DataTableToolbar } from "@/pages/admin/departments/grid/data-table-tool
 import { Deptable } from "@/pages/admin/departments/table.ts";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from 'lucide-react';
+import useDebounce2 from "@/lib/debounce.ts";
 
-const useDebounce = (value: string | null, delay: number) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-};
 
 const InputForm = lazy(() => import("./Depform"));
 
@@ -51,7 +37,8 @@ const useDepartments = () => {
   const [totalRows, setTotalRows] = useState(0); // به state منتقل شد
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  const debouncedTitle = useDebounce(title, 500);
+  const debouncedTitle = useDebounce2(title, 500);
+  //const debouncedTitle2 = useDebounce2(title, 500);
 
   const fetchDepartments = async () => {
     const queryParams = new URLSearchParams({
