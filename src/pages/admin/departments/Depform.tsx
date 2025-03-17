@@ -60,8 +60,20 @@ const FormSchema = z.object({
     parentid: z.preprocess((value) => Number(value), z.number({ message: "ParentID must be a number." })),
 });
 
-function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => void }) {
-    const { id } = useParams(); // گرفتن id از URL
+
+
+const InputForm = ({ 
+        dep_id, 
+        onSuccess
+    }: { 
+        dep_id?: string;
+        onSuccess?: () => void 
+    }) => {
+    
+    const { id } = useParams();
+
+    const effectiveId = dep_id || id;
+
 
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
@@ -84,9 +96,7 @@ function InputForm({ dep_id, onSuccess }: { dep_id?: string; onSuccess?: () => v
     const [isLoading, setIsLoading] = useState(false);
     const [isRecordLoaded, setIsRecordLoaded] = useState(false);
 
-    // dep_id= 202
-    // تعیین اینکه آیا در حالت ویرایش هستیم یا خیر
-    const effectiveId = dep_id || id;
+    
 
     useEffect(() => {
         async function fetchRecord(recordId: string) {
