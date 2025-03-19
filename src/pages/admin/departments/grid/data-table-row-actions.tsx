@@ -23,17 +23,23 @@ import { departmentSchema } from "./schema.ts"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
-  handleDialog: (id: number) => void;
+  handleEditDialog: (id: number) => void;
+  handleRemoveDialog: (id: number) => void;
 }
 
 export function DataTableRowActions<TData>({
   row,
-  handleDialog,
+  handleEditDialog,
+  handleRemoveDialog,
 }: DataTableRowActionsProps<TData>) {
   const department = departmentSchema.parse(row.original);
 
   const edit = () => {
-    handleDialog(department?.id);
+    handleEditDialog(department?.id);
+  }
+
+  const remove = () => {
+    handleRemoveDialog(department?.id);
   }
 
   return (
@@ -49,28 +55,28 @@ export function DataTableRowActions<TData>({
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
         <DropdownMenuItem onClick={edit}>Edit</DropdownMenuItem>
-        <DropdownMenuItem>Make a copy</DropdownMenuItem>
-        <DropdownMenuItem>Favorite</DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuSub>
-          <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>
-          <DropdownMenuSubContent>
-            <DropdownMenuRadioGroup >
+        {/*<DropdownMenuItem>Make a copy</DropdownMenuItem>*/}
+        {/*<DropdownMenuItem>Favorite</DropdownMenuItem>*/}
+        {/*<DropdownMenuSeparator />*/}
+        {/*<DropdownMenuSub>*/}
+        {/*  <DropdownMenuSubTrigger>Labels</DropdownMenuSubTrigger>*/}
+        {/*  <DropdownMenuSubContent>*/}
+        {/*    <DropdownMenuRadioGroup >*/}
 
-                <DropdownMenuItem >
-                  {department.id}
-                </DropdownMenuItem>
-                <DropdownMenuItem >
-                  Make a copy 2
-                </DropdownMenuItem>
+        {/*        <DropdownMenuItem >*/}
+        {/*          {department.id}*/}
+        {/*        </DropdownMenuItem>*/}
+        {/*        <DropdownMenuItem >*/}
+        {/*          Make a copy 2*/}
+        {/*        </DropdownMenuItem>*/}
 
-            </DropdownMenuRadioGroup>
-          </DropdownMenuSubContent>
-        </DropdownMenuSub>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        {/*    </DropdownMenuRadioGroup>*/}
+        {/*  </DropdownMenuSubContent>*/}
+        {/*</DropdownMenuSub>*/}
+        {/*<DropdownMenuSeparator />*/}
+        <DropdownMenuItem onClick={remove}>
           Delete
-          <DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>
+          {/*<DropdownMenuShortcut>⌘⌫</DropdownMenuShortcut>*/}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

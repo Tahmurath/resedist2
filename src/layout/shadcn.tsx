@@ -16,6 +16,7 @@ import {getAuthToken, getUser, setAuthToken} from "@/services/authService.ts";
 import { useTranslation } from "react-i18next";
 import UserMenu from "@/components/UserMenu.tsx";
 import {useState} from "react";
+import {Toaster} from "@/components/ui/toaster.tsx";
 
 
 const Navlayout = () =>{
@@ -89,6 +90,7 @@ const Navlayout = () =>{
         </header>
         <div className="flex flex-1 flex-col gap-4 p-6">
                 <Outlet />
+            <Toaster />
             </div>
         </SidebarInset>
     </SidebarProvider>

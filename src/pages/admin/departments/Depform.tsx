@@ -169,7 +169,7 @@ const InputForm = ({
 
     // سابمیت فرم
     async function onSubmit(data: z.infer<typeof FormSchema>) {
-        //setIsLoading(true);
+        setIsLoading(true);
         try {
             let response;
             if (effectiveId) {
@@ -256,7 +256,7 @@ const InputForm = ({
                         </FormItem>
                     )}
                 />
-
+                <h1>{isLoading}ss</h1>
                 <FormField
                     control={form.control}
                     name="departmenttypeid"
@@ -403,7 +403,6 @@ const InputForm = ({
                         </FormItem>
                     )}
                 />
-
 
                 <Button type="submit" disabled={isLoading}>
                     {isLoading ? <Loader2 className="animate-spin" /> : 'Submit'}

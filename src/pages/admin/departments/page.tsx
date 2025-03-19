@@ -19,6 +19,19 @@ import { Deptable } from "@/pages/admin/departments/table.ts";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from 'lucide-react';
 import useDebounce2 from "@/lib/debounce.ts";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from "@/components/ui/alert-dialog"
+import {AlertDialogFooter, AlertDialogHeader} from "@/components/ui/alert-dialog.tsx";
+import {z} from "zod";
+import {toast} from "@/hooks/use-toast.ts";
+
 
 
 const InputForm = lazy(() => import("./Depform"));
@@ -36,6 +49,7 @@ const useDepartments = () => {
   const [totalPages, setTotalPages] = useState(1); // به state منتقل شد
   const [totalRows, setTotalRows] = useState(0); // به state منتقل شد
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+
 
   const debouncedTitle = useDebounce2(title, 500);
   //const debouncedTitle2 = useDebounce2(title, 500);
@@ -119,6 +133,9 @@ const useDepartments = () => {
     //refreshDepartments();
   };
 
+
+
+
   return {
     departments: displayedDepartments,
     currentPage,
@@ -145,13 +162,20 @@ const DepartmentPage = () => {
 
   const [depid, setDepid] = useState<string | null>(null);
 
-  const [open, setOpen] = useState(false);
+  const [editopen, setEditOpen] = useState(false);
+  const [removeopen, setRemoveOpen] = useState(false);
   const { t } = useTranslation();
+  const [isLoading2, setIsLoading2] = useState(false);
 
-  const handleDialog = (id) => {
+  const handleEditDialog = (id) => {
 
     setDepid(id)
-    setOpen(true);
+    setEditOpen(true);
+  };
+  const handleRemoveDialog = (id) => {
+
+    setDepid(id)
+    setRemoveOpen(true);
   };
 
   // useEffect(() => {
@@ -168,7 +192,7 @@ const DepartmentPage = () => {
     //setOpen(false);
   };
 
-  const columns = GetColumns(handleDialog)
+  const columns = GetColumns(handleEditDialog, handleRemoveDialog);
 
   const {
     departments,
@@ -197,6 +221,30 @@ const DepartmentPage = () => {
   });
 
 
+  async function onDelete(depid) {
+    setIsLoading2(true);
+    try {
+      const response = await axiosInstance.delete(`/api/v1/department/${depid}`);
+
+      //if (onSuccess) onSuccess();
+      toast({
+        title: "delete",
+        description: (
+            <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                        <code className="text-white">#{depid} Deleted</code>
+                    </pre>
+        ),
+      });
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      toast({ title: "Error", description: "Failed to submit form." });
+    } finally {
+      setIsLoading2(false);
+      refreshDepartments();
+    }
+  }
+
+
 
   if (isLoading && isInitialLoad) {
     return <p>در حال بارگذاری...</p>;
@@ -221,8 +269,7 @@ const DepartmentPage = () => {
           <Button onClick={clearAllCache}>پاک کردن همه کش‌ها</Button>
         </div> */}
       </div>
-      <Dialog open={open} onOpenChange={setOpen} modal={true}>
-
+      <Dialog open={editopen} onOpenChange={setEditOpen} modal={true}>
         <DialogContent>
           <DialogHeader>
             {depid ? (
@@ -233,19 +280,32 @@ const DepartmentPage = () => {
             ) : (
                 <DialogTitle>Add new department</DialogTitle>
             )}
-
-
           </DialogHeader>
           <Suspense fallback={<p>در حال بارگذاری...</p>}>
             <InputForm onSuccess={handleFormSuccess} dep_id={depid} />
           </Suspense>
           <DialogFooter>
-            {/*<Button variant={"outline"} onClick={() => setOpen(false)}>*/}
-            {/*  Cancel*/}
-            {/*</Button>*/}
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <AlertDialog open={removeopen} onOpenChange={setRemoveOpen}>
+        <AlertDialogTrigger asChild>
+
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant={"destructive"} onClick={() => onDelete(depid)} >{isLoading ? <Loader2 className="animate-spin" /> : 'Delete'}</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <div className="space-y-4">
 
@@ -263,7 +323,7 @@ const DepartmentPage = () => {
                 <button
                     onClick={() => {
                       setDepid(null)
-                      setOpen(true)
+                      setEditOpen(true)
                       }}
                     className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
                 >
