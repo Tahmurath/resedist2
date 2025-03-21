@@ -75,7 +75,7 @@ export function DataTableToolbar<TData>({
       <div className="flex items-center justify-between">
         <div className="flex flex-1 items-center space-x-2">
           <Input
-              placeholder="Filter Departments..."
+              placeholder={t("department.searchbytitle")}
               onChange={(event) => onTitleChange(event.target.value)}
               className="h-8 w-[150px] lg:w-[250px]"
           />
@@ -83,7 +83,7 @@ export function DataTableToolbar<TData>({
             {table.getColumn("departmentType") && (
                 <DataTableFacetedFilter
                     column={table.getColumn("departmentType")}
-                    title={t("site.deptype")}
+                    title={t("department.deptype")}
                     onFilterChange={onFilterChange}
                     options={departmentTypes}
                     setSearchQuery={(query) =>
@@ -97,7 +97,7 @@ export function DataTableToolbar<TData>({
             {table.getColumn("parent") && (
                 <DataTableFacetedFilter
                     column={table.getColumn("parent")}
-                    title={t("site.parent")}
+                    title={t("department.parent")}
                     onFilterChange={onFilterChange}
                     options={parents}
                     setSearchQuery={(query) =>

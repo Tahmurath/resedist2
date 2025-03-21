@@ -15,8 +15,8 @@ import {Navigate, NavLink, useNavigate, useLocation} from "react-router";
 import {getAuthToken, getUser, setAuthToken} from "@/services/authService.ts";
 import { useTranslation } from "react-i18next";
 import UserMenu from "@/components/UserMenu.tsx";
-import {useState} from "react";
 import {Toaster} from "@/components/ui/toaster.tsx";
+import Isloggedin from "@/components/Isloggedin";
 
 
 const Navlayout = () =>{
@@ -31,16 +31,21 @@ const Navlayout = () =>{
     }
 
     const { t } = useTranslation();
+    const pathnames = location.pathname.split('/').filter((x) => x);
+  
+    
 
-    const [sidebarOpen, setSidebarOpen] = useState(true)
-
-    const handleNavLinkClick = () => {
-        setSidebarOpen(false);
-    };
+    const handleSearch = (e) => {
+      e.preventDefault();
+      const query = e.target.search.value;
+      alert(query)
+  };
+  
 
     return (
 
-        // <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
+        
+        <Isloggedin>
         <SidebarProvider >
         <AppSidebar  />
         <SidebarInset>
@@ -52,30 +57,41 @@ const Navlayout = () =>{
             <SidebarTrigger />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb className="hidden sm:block">
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
+  <BreadcrumbList>
+    {pathnames.map((value, index) => {
+      const last = index === pathnames.length - 1;
+      const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+
+      return (
+        <BreadcrumbItem key={to}>
+          {last ? (
+            <BreadcrumbPage>{value}</BreadcrumbPage>
+            // <BreadcrumbPage>{t(`site.${value}`)}</BreadcrumbPage>
+          ) : (
+            <>
+              <BreadcrumbLink asChild>
+                <NavLink to={to}>{value}</NavLink>
+              </BreadcrumbLink>
+              <BreadcrumbSeparator />
+            </>
+          )}
+        </BreadcrumbItem>
+      );
+    })}
+  </BreadcrumbList>
+</Breadcrumb>
 
 
-            <form className="w-full sm:ml-auto sm:w-auto" >
+            <form onSubmit={handleSearch} className="w-full sm:ml-auto sm:w-auto" >
 
                 <div className="relative">
                     <Label htmlFor="search" className="sr-only">
                     Search
                     </Label>
                     <SidebarInput
-                    id="search"
-                    placeholder="Type to search..."
-                    className="h-8 pl-7"
+                        id="search"
+                        placeholder={t("site.typetosearch")}
+                        className="h-8 pl-7"
                     />
                     <Search className="pointer-events-none absolute left-2 top-1/2 size-4 -translate-y-1/2 select-none opacity-50" />
                 </div>
@@ -94,6 +110,7 @@ const Navlayout = () =>{
             </div>
         </SidebarInset>
     </SidebarProvider>
+    </Isloggedin>
       )
 }
 

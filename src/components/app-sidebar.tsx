@@ -70,7 +70,7 @@ const data = {
           url: "/admin/panel",
         },
         {
-          title: t("site.departments"),
+          title: t("department.departments"),
           url: "/admin/departments",
         },
       ],

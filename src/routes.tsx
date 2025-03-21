@@ -107,7 +107,7 @@ export const router = createBrowserRouter([
             ),
         },
         {
-            path: 'department/:id',
+            path: 'departments/:id',
             element: (
                 <Suspense fallback={<>...</>}>
                     <ViewItem record={null} />
@@ -115,7 +115,7 @@ export const router = createBrowserRouter([
             ),
         },
         {
-             path: 'department/:id/edit',
+             path: 'departments/:id/edit',
             element: (
                 <Suspense fallback={<>...</>}>
                     <Depform />

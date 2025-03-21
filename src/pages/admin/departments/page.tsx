@@ -258,9 +258,9 @@ const DepartmentPage = () => {
     <div className="h-full flex-1 flex-col space-y-4 md:flex">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{t("site.departments")}</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t("department.departments")}</h2>
           <p className="text-muted-foreground">
-            Here's a list of your {t("site.departments")} for this month!
+          {t("department.departmentslist")}
           </p>
         </div>
         {/* <div className="space-x-2">
@@ -314,12 +314,12 @@ const DepartmentPage = () => {
 
             <div className="bg-muted/40 border rounded-[0.5rem] border-gray-300">
               <div className="flex flex-wrap border-b bg-muted/90 pl-4 border-gray-300 rounded-t-[0.5rem]">
-                <NavLink
+                {/* <NavLink
                     className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
                     to="/admin/depform"
                 >
                   Add new department
-                </NavLink>
+                </NavLink> */}
                 <button
                     onClick={() => {
                       setDepid(null)
@@ -327,13 +327,13 @@ const DepartmentPage = () => {
                       }}
                     className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
                 >
-                  Add new department
+                  {t("department.add_new_dep")}
                 </button>
                 <button
                     onClick={refreshDepartments}
                     className="text-blue-600 gap-x-3 rounded-md p-2 text-xs font-semibold"
                 >
-                  Refresh
+                  {t("site.refresh")}
 
                 </button>
                 {isFetching && departments.length ? (

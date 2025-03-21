@@ -58,9 +58,9 @@ function LightSidebarWithHeader() {
         { name: t("site.home"), href: '/', icon: HomeIcon, current: true },
         { name: t("site.admin"), href: '/admin', icon: CalendarIcon, current: false },
         { name: t("site.panel"), href: '/admin/panel', icon: UsersIcon, current: false },
-        { name: t("site.departments"), href: '/admin/departments', icon: UsersIcon, current: false ,
+        { name: t("department.departments"), href: '/admin/departments', icon: UsersIcon, current: false ,
             children: [
-                { name: t("site.departments"), href: '/admin/departments' },
+                { name: t("department.departments"), href: '/admin/departments' },
                 { name: 'Human Resources', href: '/admin/panel' },
                 { name: 'Customer Success', href: '/admin' },
               ],

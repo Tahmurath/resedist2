@@ -256,7 +256,6 @@ const InputForm = ({
                         </FormItem>
                     )}
                 />
-                <h1>{isLoading}ss</h1>
                 <FormField
                     control={form.control}
                     name="departmenttypeid"
