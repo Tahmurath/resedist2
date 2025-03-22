@@ -49,15 +49,15 @@ interface Department {
 const FormSchema = z.object({
     title: z.string().min(3, { message: "Title must be at least 3 characters." }),
     departmenttypeid: z.preprocess((value) => Number(value), z.number({ message: "DepartmentTypeID must be a number." })),
-    id: z.preprocess(
-        (value) => (value ? Number(value) : undefined), // اگه مقدار داره به عدد تبدیل کن، وگرنه undefined
-        z.number({ message: "ID must be a number." }).optional()
-    ),
+    // id: z.preprocess(
+    //     (value) => (value ? Number(value) : undefined),
+    //     z.number({ message: "ID must be a number." }).optional()
+    // ),
     parentid: z.preprocess((value) => Number(value), z.number({ message: "ParentID must be a number." })),
 });
 
 
-// تابع گرفتن انواع دپارتمان‌ها
+
 const fetchDepTypes = async (query: string, effectiveId?: string, departmentTypeId?: number) => {
     let url = `/api/v1/department-type?title=${encodeURIComponent(query)}`;
     if (effectiveId && departmentTypeId) {
@@ -67,7 +67,7 @@ const fetchDepTypes = async (query: string, effectiveId?: string, departmentType
     return response.data.data;
 };
 
-// تابع گرفتن دپارتمان‌ها
+
 const fetchDepartments = async (query: string, effectiveId?: string, parentId?: string | number) => {
     let url = `/api/v1/department?title=${encodeURIComponent(query)}`;
     if (effectiveId && parentId) {
@@ -93,7 +93,7 @@ const InputForm = ({
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
-            id: undefined,
+            //id: undefined,
             title: "",
             departmenttypeid: undefined,
             parentid: undefined,
@@ -126,7 +126,7 @@ const InputForm = ({
                 // console.info(record)
                 
                 form.reset({
-                    id: record.id,
+                    //id: record.id,
                     title: record.title,
                     departmenttypeid: typeof record.departmentType === "number" ? record.departmentType : record.departmentType?.id,
                     parentid: typeof record.parent === "number" ? record.parent : record.parent?.id,
@@ -149,7 +149,7 @@ const InputForm = ({
         }
     }, [effectiveId, form]);
 
-    // گرفتن انواع دپارتمان‌ها با react-query
+    
     const { data: depTypes = [] } = useQuery({
         queryKey: ["depTypes", debouncedQuery1, effectiveId, effectiveRecord?.departmentType?.id],
         queryFn: () => fetchDepTypes(debouncedQuery1, effectiveId, effectiveRecord?.departmentType?.id),
@@ -180,8 +180,8 @@ const InputForm = ({
                 // حالت ثبت جدید: درخواست POST
 
                 // حالت ثبت جدید: درخواست POST
-                const { id, ...dataWithoutId } = data; // id رو حذف کن
-                response = await axiosInstance.post(`/api/v1/department`, dataWithoutId);
+                // const { id, ...dataWithoutId } = data; // id رو حذف کن
+                response = await axiosInstance.post(`/api/v1/department`, data);
                 setRecord(response.data.data);
             }
             
@@ -226,19 +226,6 @@ const InputForm = ({
             {/*)}*/}
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                {effectiveId && (
-                    <FormField
-                        control={form.control}
-                        name="id"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                    <Input {...field} type="hidden" />
-                                </FormControl>
-                            </FormItem>
-                        )}
-                    />
-                )}
                 <FormField
                     control={form.control}
                     name="title"

@@ -10,7 +10,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button.tsx";
 import { NavLink } from "react-router";
@@ -29,7 +28,6 @@ import {
   AlertDialogTrigger
 } from "@/components/ui/alert-dialog"
 import {AlertDialogFooter, AlertDialogHeader} from "@/components/ui/alert-dialog.tsx";
-import {z} from "zod";
 import {toast} from "@/hooks/use-toast.ts";
 
 
@@ -92,8 +90,8 @@ const useDepartments = () => {
   useEffect(() => {
     if (!isFetching) {
       setDisplayedDepartments(departments);
-      setTotalPages(data?._pagination?.total_pages || 1); // فقط وقتی داده جدیده آپدیت می‌شه
-      setTotalRows(data?._pagination?.total_rows || 0); // فقط وقتی داده جدیده آپدیت می‌شه
+      setTotalPages(data?.pagination?.total_pages || 1); // فقط وقتی داده جدیده آپدیت می‌شه
+      setTotalRows(data?.pagination?.total_rows || 0); // فقط وقتی داده جدیده آپدیت می‌شه
     }
     if (isInitialLoad && !isLoading) {
       setIsInitialLoad(false);
@@ -132,9 +130,6 @@ const useDepartments = () => {
     setCurrentPage(1);
     //refreshDepartments();
   };
-
-
-
 
   return {
     departments: displayedDepartments,
