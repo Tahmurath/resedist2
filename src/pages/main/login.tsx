@@ -64,7 +64,7 @@ const Login = () =>{
                     ),
                 });
 
-                if (logininfo.user.token) navigate("/admin");
+                if (logininfo.token) navigate("/admin");
 
             } catch (error: any) {
                 let errorMessage = "An unexpected error occurred. Please try again.";

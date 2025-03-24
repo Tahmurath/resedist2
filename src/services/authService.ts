@@ -20,10 +20,13 @@ const login = async (email: string, password: string) => {
       password,
     });
 
-    const user = response.data.user;
-    localStorage.setItem("user", JSON.stringify(user));
-    setAuthToken(user.token);
-    return response.data;
+    const data = response.data;
+    // console.info(data.data)
+    localStorage.setItem("user", JSON.stringify(data.data.user));
+    localStorage.setItem("access_token", JSON.stringify(data.data.token));
+    localStorage.setItem("refresh_token", JSON.stringify(data.data.token));
+    setAuthToken(data.data.token);
+    return response.data.data;
 
   } catch (error: any) {
     if (error.response) {
@@ -47,9 +50,14 @@ const login = async (email: string, password: string) => {
 
 const getAuthToken = () => {
   try {
+    // const token = JSON.parse(
+    //   localStorage.getItem("user") as string
+    // )?.token;
+
     const token = JSON.parse(
-      localStorage.getItem("user") as string
-    )?.token;
+      localStorage.getItem("access_token") as string
+     )
+
     if (token) {
       return token;
     }
