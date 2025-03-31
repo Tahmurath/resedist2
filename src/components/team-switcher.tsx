@@ -16,6 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { NavLink } from "react-router"
 
 export function TeamSwitcher({
   teams,
@@ -39,15 +40,14 @@ export function TeamSwitcher({
         <DropdownMenu>
           {/*<DropdownMenuTrigger asChild>*/}
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <NavLink to={"/"}>
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <GalleryVerticalEnd className="size-4" />
                 </div>
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">Documentation</span>
-                  <span className="">v1.0.0</span>
+                  <span className="font-semibold">Home</span>
                 </div>
-              </a>
+              </NavLink>
             </SidebarMenuButton>
             {/*<SidebarMenuButton*/}
             {/*  size="lg"*/}

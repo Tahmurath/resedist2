@@ -20,7 +20,7 @@ import {
 
 
 import { departmentSchema } from "./schema.ts"
-import { useNavigate,Navigate, NavLink } from "react-router"
+import { NavLink } from "react-router"
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -43,8 +43,6 @@ export function DataTableRowActions<TData>({
     handleRemoveDialog(department?.id);
   }
 
-  const navigate = useNavigate();
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -57,9 +55,7 @@ export function DataTableRowActions<TData>({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-      <DropdownMenuItem onClick={()=> navigate("/admin/departments/"+department?.id)} >
-        View
-        </DropdownMenuItem>
+      <DropdownMenuItem ><NavLink to={"/admin/department-types/"+department?.id}>View</NavLink></DropdownMenuItem>
         <DropdownMenuItem onClick={edit}>Edit</DropdownMenuItem>
         {/* onClick={() => alert(534534)} */}
         

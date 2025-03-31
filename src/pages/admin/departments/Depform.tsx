@@ -61,7 +61,7 @@ const FormSchema = z.object({
 const fetchDepTypes = async (query: string, effectiveId?: string, departmentTypeId?: number) => {
     let url = `/api/v1/department-type?title=${encodeURIComponent(query)}`;
     if (effectiveId && departmentTypeId) {
-        url += `&department_type=${departmentTypeId}`;
+        url += `&depType=${departmentTypeId}`;
     }
     const response = await axiosInstance.get(url);
     return response.data.data;

@@ -8,8 +8,7 @@ import DeleteAlert from "./Delete";
 interface Department {
   id: string;
   title: string;
-  departmentType: string;
-  parent?: string;
+  is_active: boolean;
 }
 
 const ViewItem = ({ record }: { record?: Department | null }) => {
@@ -30,7 +29,7 @@ const ViewItem = ({ record }: { record?: Department | null }) => {
   const fetchRecordFromApi = async () => {
     try {
       setLoading(true);
-      const response = await axiosInstance.get(`/api/v1/department/${id}`);
+      const response = await axiosInstance.get(`/api/v1/department-type/${id}`);
       setData(response.data.data);
     } catch (error) {
       console.error("Error fetching department:", error);
@@ -54,11 +53,10 @@ const ViewItem = ({ record }: { record?: Department | null }) => {
       <ul className="mt-2 space-y-2">
         <li>id: {data.id}</li>
         <li>title: {data.title}</li>
-        <li>deptype: {data.departmentType}</li>
-        <li>parent: {data.parent || "ندارد"}</li>
+        <li>is_active: {data.is_active ? "Active":"Inactive"}</li>
       </ul>
       <div className="mt-4 space-x-2">
-        <NavLink to={`/admin/departments/${data.id}/edit`}>
+        <NavLink to={`/admin/department-types/${data.id}/edit`}>
           <Button variant="default">Edit</Button>
         </NavLink>
         <Button variant="destructive" onClick={() => setRemoveOpen(true)}>

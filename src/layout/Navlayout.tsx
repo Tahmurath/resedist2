@@ -20,6 +20,7 @@ const Navlayout = () =>{
 
     const logout = async () => {
         localStorage.removeItem("user");
+        localStorage.removeItem("access_token");
         setAuthToken("");
         navigate("/");
     }
@@ -110,7 +111,7 @@ const Navlayout = () =>{
                                         {getUser()? (
                                         <span className="hidden lg:flex lg:items-center">
                                             <span aria-hidden="true" className="ml-4 text-sm font-semibold leading-6 bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
-                                                {getUser()?.info?.Email}
+                                                {getUser()?.Email}
                                             </span>
                                           <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400"/>
                                         </span>
@@ -210,7 +211,7 @@ const Navlayout = () =>{
 
             <header className="bg-white shadow">
                 <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Admin Layout</h1>
+                    {/* <h1 className="text-3xl font-bold tracking-tight text-gray-900">Admin Layout</h1> */}
                 </div>
             </header>
             <main>

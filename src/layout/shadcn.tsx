@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import UserMenu from "@/components/UserMenu.tsx";
 import {Toaster} from "@/components/ui/toaster.tsx";
 import Isloggedin from "@/components/Isloggedin";
+import React from "react";
 
 
 const Navlayout = () =>{
@@ -57,29 +58,32 @@ const Navlayout = () =>{
             <SidebarTrigger />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb className="hidden sm:block">
-  <BreadcrumbList>
-    {pathnames.map((value, index) => {
-      const last = index === pathnames.length - 1;
-      const to = `/${pathnames.slice(0, index + 1).join('/')}`;
+              <BreadcrumbList>
+                {pathnames.map((value, index) => {
+                  const last = index === pathnames.length - 1;
+                  const to = `/${pathnames.slice(0, index + 1).join('/')}`;
 
-      return (
-        <BreadcrumbItem key={to}>
-          {last ? (
-            <BreadcrumbPage>{value}</BreadcrumbPage>
-            // <BreadcrumbPage>{t(`site.${value}`)}</BreadcrumbPage>
-          ) : (
-            <>
-              <BreadcrumbLink asChild>
-                <NavLink to={to}>{value}</NavLink>
-              </BreadcrumbLink>
-              <BreadcrumbSeparator />
-            </>
-          )}
-        </BreadcrumbItem>
-      );
-    })}
-  </BreadcrumbList>
-</Breadcrumb>
+                  return (
+                    <React.Fragment key={to}>
+                      <BreadcrumbItem>
+                        {last ? (
+                          <BreadcrumbPage>
+                          {value.slice(0,1).toUpperCase() + value.slice(1, value.length)}
+                          </BreadcrumbPage>
+                        ) : (
+                          <BreadcrumbLink asChild>
+                            <NavLink to={to}>
+                              {value.slice(0,1).toUpperCase() + value.slice(1, value.length)}
+                              </NavLink>
+                          </BreadcrumbLink>
+                        )}
+                      </BreadcrumbItem>
+                      {!last && <BreadcrumbSeparator />}
+                    </React.Fragment>
+                  );
+                })}
+              </BreadcrumbList>
+            </Breadcrumb>
 
 
             <form onSubmit={handleSearch} className="w-full sm:ml-auto sm:w-auto" >

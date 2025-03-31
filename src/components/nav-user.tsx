@@ -29,6 +29,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useNavigate} from "react-router";
+import { setAuthToken } from "@/services/authService"
 
 export function NavUser({
   user,
@@ -40,6 +42,16 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+
+  const navigate = useNavigate();
+  
+
+  const logout = async () => {
+          localStorage.removeItem("user");
+          localStorage.removeItem("access_token");
+          setAuthToken("");
+          navigate("/");
+  }
 
   return (
     <SidebarMenu>
@@ -102,7 +114,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={logout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
@@ -112,3 +124,5 @@ export function NavUser({
     </SidebarMenu>
   )
 }
+
+

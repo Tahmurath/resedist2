@@ -7,12 +7,14 @@
     "refresh": "Refresh",
     "edit": "Edit",
     "departments": "Departments",
+    "is_active": "Is Active?",
     "typetosearch": "Type to search..."
   },
   "department": {
     "department": "Department",
     "departments": "Departments",
     "deptype": "Department Type",
+    "deptypes": "Department Types",
     "parent": "Parent Department",
     "add_new_dep":"Add new department",
     "searchbytitle":"Department title...",

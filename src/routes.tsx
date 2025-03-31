@@ -19,9 +19,10 @@ const Login = lazy(() => import('./pages/main/login'));
 const Dashboard = lazy(() => import('./pages/admin/Dashboard'));
 const Panel = lazy(() => import('./pages/admin/Panel'));
 //const Department = lazy(() => import('./pages/admin/departments/Department.tsx'));
-const Departments = lazy(() => import('./pages/admin/departments/page.tsx'));
-const Depform = lazy(() => import('./pages/admin/departments/Depform.tsx'));
-const ViewItem = lazy(() => import('./pages/admin/departments/Depview.tsx'));
+const Departments = lazy(() => import('./pages/admin/departments/page'));
+const DepartmentTypes = lazy(() => import('./pages/admin/department-types/page'));
+const Depform = lazy(() => import('./pages/admin/departments/Depform'));
+const ViewItem = lazy(() => import('./pages/admin/departments/Depview'));
 // const TaskPage = lazy(() => import('./pages/admin/tasks/page.tsx'));
 
 export const router = createBrowserRouter([
@@ -91,6 +92,14 @@ export const router = createBrowserRouter([
         //     </Suspense>
         // )},
         {
+            path: 'department-types',
+            element: (
+                <Suspense fallback={<>...</>}>
+                  <DepartmentTypes />
+                </Suspense>
+            ),
+        },
+        {
             path: 'departments',
             element: (
                 <Suspense fallback={<>...</>}>
@@ -99,7 +108,7 @@ export const router = createBrowserRouter([
             ),
         },
         {
-            path: 'depform',
+            path: 'departments/new',
             element: (
                 <Suspense fallback={<>...</>}>
                     <Depform />

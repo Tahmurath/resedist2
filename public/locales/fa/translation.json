@@ -7,12 +7,14 @@
     "refresh": "بروزرسانی",
     "edit": "ویرایش",
     "departments": "دپارتمان ها",
+    "is_active": "فعال",
     "typetosearch": "برای جستجو تایپ کنید..."
   },
   "department": {
     "department": "دپارتمان",
     "departments": "دپارتمان ها",
     "deptype": "نوع دپارتمان",
+    "deptypes": "انواع دپارتمان ها",
     "parent": "دپارتمان والد",
     "add_new_dep":"دپارتمان جدید",
     "searchbytitle":"عنوان دپارتمان...",

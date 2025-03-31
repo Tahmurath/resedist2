@@ -26,15 +26,17 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useTranslation } from "react-i18next";
+import { getUser } from "@/services/authService"
 
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
     const { t } = useTranslation();
+    
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: getUser()?.Name,
+    email: getUser()?.Email,
     avatar: "/avatars/shadcn.jpg",
   },
   teams: [
@@ -72,6 +74,10 @@ const data = {
         {
           title: t("department.departments"),
           url: "/admin/departments",
+        },
+        {
+          title: t("department.deptypes"),
+          url: "/admin/department-types",
         },
       ],
     },

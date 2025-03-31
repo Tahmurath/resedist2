@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button.tsx";
 import { NavLink } from "react-router";
-import { DataTableToolbar } from "@/pages/admin/departments/grid/data-table-toolbar.tsx";
-import { Deptable } from "@/pages/admin/departments/table.ts";
+import { DataTableToolbar } from "@/pages/admin/department-types/grid/data-table-toolbar.tsx";
+import { Deptable } from "@/pages/admin/department-types/table.ts";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2 } from 'lucide-react';
 import useDebounce2 from "@/lib/debounce.ts";
@@ -42,8 +42,7 @@ const useDepartments = () => {
   const [sortColumn, setSortColumn] = useState<string | null>(null);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc" | null>(null);
   const [title, setTitle] = useState<string | null>(null);
-  const [parentIds, setParentIds] = useState<number[] | null>([]);
-  const [departmentTypes, setDepartmentTypes] = useState<number[] | null>([]);
+  const [isactive, setIsactive] = useState(false);
   const [displayedDepartments, setDisplayedDepartments] = useState<any[]>([]);
   const [totalPages, setTotalPages] = useState(1); // به state منتقل شد
   const [totalRows, setTotalRows] = useState(0); // به state منتقل شد
@@ -56,29 +55,28 @@ const useDepartments = () => {
   const fetchDepartments = async () => {
     const queryParams = new URLSearchParams({
       expand: "true",
+      is_active: String(isactive),
       page: currentPage.toString(),
       page_size: rowsPerPage.toString(),
       ...(sortColumn && { sort: sortColumn }),
       ...(sortOrder && { order: sortOrder }),
       ...(debouncedTitle && debouncedTitle.length >= 2 && { title: debouncedTitle }),
-      ...(parentIds?.length && { parent: parentIds.join(",") }),
-      ...(departmentTypes?.length && { depType: departmentTypes.join(",") }),
+      // ...(departmentTypes?.length && { depType: departmentTypes.join(",") }),
     });
 
-    const response = await axiosInstance.get(`/api/v1/department?${queryParams}`);
+    const response = await axiosInstance.get(`/api/v1/department-type?${queryParams}`);
     return response.data;
   };
 
   const { data, isLoading, isFetching, error } = useQuery({
     queryKey: [
-      "departments",
+      "departmentTypes",
       currentPage,
       rowsPerPage,
       sortColumn,
       sortOrder,
       debouncedTitle,
-      parentIds,
-      departmentTypes,
+      isactive,
     ],
     queryFn: fetchDepartments,
     keepPreviousData: true,
@@ -100,12 +98,12 @@ const useDepartments = () => {
   }, [data, departments, isFetching, isLoading, isInitialLoad]);
 
   const refreshDepartments = () => {
-    queryClient.invalidateQueries({ queryKey: ["departments"] });
+    queryClient.invalidateQueries({ queryKey: ["departmentTypes"] });
     // setCurrentPage(1);
   };
 
   const clearDepartmentsCache = () => {
-    queryClient.removeQueries({ queryKey: ["departments"] });
+    queryClient.removeQueries({ queryKey: ["departmentTypes"] });
   };
 
   const clearAllCache = () => {
@@ -123,15 +121,14 @@ const useDepartments = () => {
     setCurrentPage(1);
   };
 
-  const handleFilterChange = (column: string | undefined, values: number[]) => {
-    if (column === "departmentType") {
-      setDepartmentTypes(values.length > 0 ? values.map((v) => Number(v)) : null);
-    } else if (column === "parent") {
-      setParentIds(values.length > 0 ? values.map((v) => Number(v)) : null);
+  const handleFilterChange = (column: string | undefined, values: boolean) => {
+    if (column === "is_active") {
+      setIsactive(values);
     }
     setCurrentPage(1);
     //refreshDepartments();
   };
+  
 
   return {
     departments: displayedDepartments,
@@ -221,7 +218,7 @@ const DepartmentPage = () => {
   async function onDelete(depid) {
     setIsLoading2(true);
     try {
-      const response = await axiosInstance.delete(`/api/v1/department/${depid}`);
+      const response = await axiosInstance.delete(`/api/v1/department-type/${depid}`);
 
       //if (onSuccess) onSuccess();
       toast({
@@ -255,9 +252,9 @@ const DepartmentPage = () => {
     <div className="h-full flex-1 flex-col space-y-4 md:flex">
       <div className="flex items-center justify-between space-y-2">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{t("department.departments")}</h2>
+          <h2 className="text-2xl font-bold tracking-tight">{t("department.deptype")}</h2>
           <p className="text-muted-foreground">
-          {t("department.departmentslist")}
+          {t("department.deptypes")}
           </p>
         </div>
         {/* <div className="space-x-2">

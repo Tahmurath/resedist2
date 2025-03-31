@@ -7,12 +7,14 @@
     "refresh": "Aktualisieren",
     "edit": "Edit",
     "departments": "Departments",
+    "is_active": "Is Active?",
     "typetosearch": "Suchbegriff eingeben..."
   },
   "department": {
     "department": "Abteilung",
     "departments": "Abteilung",
     "deptype": "Abteilungstyp",
+    "deptypes": "Abteilungstypen",
     "parent": "übergeordnete Abteilung",
     "add_new_dep":"Neue Abteilung hinzufügen",
     "searchbytitle":"Abteilungstitel...",
